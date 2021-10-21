@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package api;
+
+option go_package = "/api";
+
+
+service Lider{
+    rpc ParticiparJuego (PeticionParticipar) returns (ConfirmacionParticipacion) {}
+    rpc Jugar (Jugada) returns (Estado) {}
+    rpc Monto (PedirMonto) returns (MontoJugador) {}
+}
+
+message  PeticionParticipar {
+    string participar = 1;
+}
+
+message  ConfirmacionParticipacion {
+    string confirmacion = 1;
+}
+
+message  Jugada {
+    int32 Jugar = 1;
+}
+
+message  Estado {
+    string estado =1;
+}
+
+message PedirMonto {
+    string solicitud = 1;
+}
+
+message MontoJugador {
+    int32 monto = 1;
+}
