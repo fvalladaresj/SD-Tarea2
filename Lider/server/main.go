@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 
-	"C:\Users\vicen\Desktop\2021-2\Distribuidos\Tarea2\Lider\api"
+	"https://github.com/fvalladaresj/SD-Tarea2/tree/main/Lider/api"
 	"google.golang.org/grpc"
 )
 
