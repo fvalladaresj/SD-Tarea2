@@ -17,35 +17,22 @@ func main() {
 	defer conn.Close()
 	c := api.NewLiderClient(conn)
 
-
 	var input string
-	fmt.Println("Para participar en el Juego del calamar ingrese \'participar\' ")
+
+	fmt.Println("Bienvenido Lider, por favor espere a que hayan 16 jugadores para iniciar la partida")
+	
 	for {
-		fmt.Scanln(&input)
-		response, err = c.ParticiparJuego(context.Background(), &api.PeticionParticipar{participar = input})
-		if !(response == "ya esta participando en el juego del calamar"){
-			fmt.Println(response)
+		response, err = c.CuantosJugadores(context.Background(), &api.Check{signal = 1})
+		if !(response != 16){
 			break
 		}
-	for {
-		response, err = c.Estado(context.Background(), &api.Check{signal = 1})
-		if !(response == "ya esta participando en el juego del calamar"){
-			fmt.Println(response)
-			break
+		else{
+			fmt.Println("Ya hay 16 Jugadores, ahora puede dar inicio a la primera etapa")
 		}
 	}
 
+	fmt.Scanln(&input)
 	
 
 
-	
-	
-	
-
-	if 
-	response, err := c.SayHello(context.Background(), &api.PingMessage{Greeting: "foo"})
-	if err != nil {
-	  log.Fatalf("Error when calling SayHello: %s", err)
-	}
-	log.Printf("Response from server: %s", response.Greeting)
-  }
+}

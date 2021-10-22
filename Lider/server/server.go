@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 
-	"https://github.com/fvalladaresj/SD-Tarea2/tree/main/Lider/api"
+	"github.com/fvalladaresj/SD-Tarea2/tree/main/Lider/api"
 	"google.golang.org/grpc"
 )
 
@@ -27,5 +27,7 @@ func main() {
 		log.Fatalf("failed to serve: %s", err)
 	}
 
-	
+
+
+
 }

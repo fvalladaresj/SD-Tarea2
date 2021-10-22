@@ -9,7 +9,9 @@ service Lider{
     rpc ParticiparJuego (PeticionParticipar) returns (ConfirmacionParticipacion) {}
     rpc Jugar (Jugadas) returns (EstadoJugador) {}
     rpc Monto (PedirMonto) returns (MontoJugador) {}
-    rpc Estado (Check) returns (State) {}
+    rpc EstadoEtapas (Check) returns (State) {}
+    rpc Iniciar (Signal) returns (Signal) {}
+    rpc CuantosJugadores (Signal) returns (CantidadJugadores) {}
 }
 
 message  PeticionParticipar {
@@ -21,7 +23,7 @@ message  ConfirmacionParticipacion {
 }
 
 message  Jugadas {
-    repeated int32 Jugadas = 1;
+    repeated int32 jugadas = 1;
 }
 
 message  EstadoJugador {
@@ -41,5 +43,13 @@ message Check{
 }
 
 message State{
-    string etapa = 1;
+    int32 etapa = 1;
+}
+
+message Signal{
+    bool signal = 1;
+}
+
+message CantidadJugadores{
+    int32 cantidadJugadores = 1;
 }

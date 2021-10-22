@@ -37,12 +37,27 @@ func (s *Server) ParticiparJuego(ctx context.Context, in *PeticionParticipar) (*
 	}
 }
 
-func (s *Server) Estado(ctx context.Context, in *Check) (*State, error) {
+func (s *Server) EstadoEtapas(ctx context.Context, in *Check) (*State, error) {
 	if (etapa_actual == 0){
-		return &State {etapa: "Aun no comienza el juego, espere que el Lider de la señal"}
+		return &State {etapa: 0}
 	}
-
+	if (etapa_actual == 1){
+		return &State {etapa: 1}
+	}
 }
+
+func (s *Server) CuantosJugadores(ctx context.Context, in *Signal) (*CantidadJugadores, error) {
+	return &CantidadJugadores {cantidadJugadores: jugadores}
+}
+
+
+
+func (s *Server) Iniciar(ctx context.Context, in *Signal) (*Signal, error){
+	etapa_actual = etapa_actual + 1
+	return &Signal {signal: 1}
+}
+
+
 
 func (s *Server) Jugar(ctx context.Context, in *Jugadas) (*EstadoJugador, error) {
 	
