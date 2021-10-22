@@ -1,8 +1,9 @@
 package client
 
 import(
+	"context"
 	"fmt"
-	"https://github.com/fvalladaresj/SD-Tarea2/tree/main/Lider/api"
+	"github.com/fvalladaresj/SD-Tarea2/Lider/api"
 	"golang.org/x/net/context"
   	"google.golang.org/grpc"
 	"math/rand"

@@ -15,41 +15,41 @@ service Lider{
 }
 
 message  PeticionParticipar {
-    string participar = 1;
+    string Participar = 1;
 }
 
 message  ConfirmacionParticipacion {
-    string confirmacion = 1;
+    string Confirmacion = 1;
 }
 
 message  Jugadas {
-    repeated int32 jugadas = 1;
+    repeated int32 Plays = 1;
 }
 
 message  EstadoJugador {
-    string estado =1;
+    string Estado =1;
 }
 
 message PedirMonto {
-    string solicitud = 1;
+    string Solicitud = 1;
 }
 
 message MontoJugador {
-    int32 monto = 1;
+    int32 Monto = 1;
 }
 
 message Check{
-    bool signal = 1;
+    bool Sign = 1;
 }
 
 message State{
-    int32 etapa = 1;
+    int32 Etapa = 1;
 }
 
 message Signal{
-    bool signal = 1;
+    bool Sign = 1;
 }
 
 message CantidadJugadores{
-    int32 cantidadJugadores = 1;
+    int32 CJugadores = 1;
 }
