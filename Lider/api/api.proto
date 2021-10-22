@@ -7,8 +7,9 @@ option go_package = "/api";
 
 service Lider{
     rpc ParticiparJuego (PeticionParticipar) returns (ConfirmacionParticipacion) {}
-    rpc Jugar (Jugadas) returns (Estado) {}
+    rpc Jugar (Jugadas) returns (EstadoJugador) {}
     rpc Monto (PedirMonto) returns (MontoJugador) {}
+    rpc Estado (Check) returns (State) {}
 }
 
 message  PeticionParticipar {
@@ -23,7 +24,7 @@ message  Jugadas {
     repeated int32 Jugadas = 1;
 }
 
-message  Estado {
+message  EstadoJugador {
     string estado =1;
 }
 
@@ -33,4 +34,12 @@ message PedirMonto {
 
 message MontoJugador {
     int32 monto = 1;
+}
+
+message Check{
+    bool signal = 1;
+}
+
+message State{
+    string etapa = 1;
 }

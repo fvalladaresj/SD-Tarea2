@@ -44,7 +44,7 @@ func (s *Server) Estado(ctx context.Context, in *Check) (*State, error) {
 
 }
 
-func (s *Server) Jugar(ctx context.Context, in *Jugadas) (*Estado, error) {
+func (s *Server) Jugar(ctx context.Context, in *Jugadas) (*EstadoJugador, error) {
 	
 
 	}
