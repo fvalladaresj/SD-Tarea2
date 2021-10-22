@@ -3,10 +3,12 @@ package client
 import(
 	"fmt"
 	"https://github.com/fvalladaresj/SD-Tarea2/tree/main/Lider/api"
+	"golang.org/x/net/context"
+  	"google.golang.org/grpc"
 )
 
-
 func main() {
+
 	var conn *grpc.ClientConn
 	conn, err := grpc.Dial(":7777", grpc.WithInsecure())
 	if err != nil {
@@ -15,14 +17,28 @@ func main() {
 	defer conn.Close()
 	c := api.NewLiderClient(conn)
 
+
 	var input string
 	fmt.Println("Para participar en el Juego del calamar ingrese \'participar\' ")
 	for {
 		fmt.Scanln(&input)
-		if !(input == "participar"){
+		response, err = c.ParticiparJuego(context.Background(), &api.PeticionParticipar{participar = input})
+		if !(response == "ya esta participando en el juego del calamar"){
+			fmt.Println(response)
+			break
+		}
+	for {
+		response, err = c.Estado(context.Background(), &api.Check{signal = 1})
+		if !(response == "ya esta participando en el juego del calamar"){
+			fmt.Println(response)
 			break
 		}
 	}
+
+	
+
+
+	
 	
 	
 
