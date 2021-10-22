@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net"
 
@@ -17,7 +16,7 @@ type server struct {
 // main start a gRPC server and waits for connection
 func main() {
 	// create a listener on TCP port 7777
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", 7777))
+	lis, err := net.Listen("tcp", "0.0.0.0:50051")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
@@ -29,9 +28,6 @@ func main() {
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}
-
-
-
 
 }
 
@@ -45,52 +41,47 @@ var lider_e1_r4 int32 = -1
 var lider_e2 int32 = -1
 var lider_e3 int32 = -1
 
-
-
-
 func (*server) ParticiparJuego(ctx context.Context, in *api.PeticionParticipar) (*api.ConfirmacionParticipacion, error) {
-	if (in.Participar == "participar"){
-		if (jugadores < 16){
+	if in.Participar == "participar" {
+		if jugadores < 16 {
 
-			jugadores = jugadores+1
-			return &api.ConfirmacionParticipacion {Confirmacion: "ya esta participando en el juego del calamar"}, nil
-		}else{
+			jugadores = jugadores + 1
+			return &api.ConfirmacionParticipacion{Confirmacion: "ya esta participando en el juego del calamar"}, nil
+		} else {
 
-			return &api.ConfirmacionParticipacion {Confirmacion: "ya no puede participar, el juego esta lleno"}, nil
+			return &api.ConfirmacionParticipacion{Confirmacion: "ya no puede participar, el juego esta lleno"}, nil
 		}
-	}else{
+	} else {
 
-		return &api.ConfirmacionParticipacion {Confirmacion: "verifique que ha escrito bien participar"}, nil
+		return &api.ConfirmacionParticipacion{Confirmacion: "verifique que ha escrito bien participar"}, nil
 	}
 }
 
 func (*server) EstadoEtapas(ctx context.Context, in *api.Check) (*api.State, error) {
-	if (etapa_actual == 0){
-		return &api.State {Etapa: 0}, nil
+	if etapa_actual == 0 {
+		return &api.State{Etapa: 0}, nil
 	}
-	if (etapa_actual == 1){
-		return &api.State {Etapa: 1}, nil
-	}else{
-		return &api.State {Etapa: 1}, nil
+	if etapa_actual == 1 {
+		return &api.State{Etapa: 1}, nil
+	} else {
+		return &api.State{Etapa: 1}, nil
 	}
 }
 
 func (*server) CuantosJugadores(ctx context.Context, in *api.Signal) (*api.CantidadJugadores, error) {
-	return &api.CantidadJugadores {CJugadores: jugadores},nil
+	return &api.CantidadJugadores{CJugadores: jugadores}, nil
 }
 
-
-
-func (*server) Iniciar(ctx context.Context, in *api.Signal) (*api.Signal, error){
+func (*server) Iniciar(ctx context.Context, in *api.Signal) (*api.Signal, error) {
 	etapa_actual = etapa_actual + 1
-	return &api.Signal {Sign: true}, nil
+	return &api.Signal{Sign: true}, nil
 }
 
-
-
+/*
 func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, error) {
 }
 
 func (*server) Monto(ctx context.Context, in *api.PedirMonto) (*api.MontoJugador, error) {
 
 }
+*/
