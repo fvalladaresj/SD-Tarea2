@@ -56,13 +56,11 @@ func main() {
 		if err != nil {
 			log.Fatalf("Error Call RPC: %v", err)
 		}
-		if !(response.Etapa == 0) {
+		if !(response.Etapa == 1) {
 			break
-
-		} else {
-			fmt.Println("Ha comenzado la primera etapa, Luz Verde, Luz Roja, ingrese un numero entre el 1 y el 10")
 		}
 	}
+	fmt.Println("Ha comenzado la primera etapa, Luz Verde, Luz Roja, ingrese un numero entre el 1 y el 10")
 	/*
 		response, err = c.Jugar(context.Background(), &api.Jugadas{jugadas: })
 
