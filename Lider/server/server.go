@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 
@@ -15,6 +16,8 @@ type server struct {
 
 // main start a gRPC server and waits for connection
 func main() {
+	// listen to input concurrently
+	go manageInput()
 	// create a listener on TCP port 7777
 	lis, err := net.Listen("tcp", "0.0.0.0:50051")
 	if err != nil {
@@ -40,6 +43,15 @@ var lider_e1_r3 int32 = -1
 var lider_e1_r4 int32 = -1
 var lider_e2 int32 = -1
 var lider_e3 int32 = -1
+
+func manageInput() {
+	for {
+		input := ""
+		fmt.Println("ingrese algo:")
+		fmt.Scanln(&input)
+		fmt.Println(input)
+	}
+}
 
 func (*server) ParticiparJuego(ctx context.Context, in *api.PeticionParticipar) (*api.ConfirmacionParticipacion, error) {
 	if in.Participar == "participar" {
