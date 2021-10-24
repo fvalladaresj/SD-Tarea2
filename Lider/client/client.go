@@ -23,7 +23,7 @@ func main() {
 	fmt.Println("Bienvenido Lider, por favor espere a que hayan 16 jugadores para iniciar la partida")
 	
 	for {
-		response, err = c.CuantosJugadores(context.Background(), &api.Check{signal = 1})
+		response, err = c.CuantosJugadores(context.Background(), &api.Check{Sign = 1})
 		if !(response != 16){
 			break
 		}

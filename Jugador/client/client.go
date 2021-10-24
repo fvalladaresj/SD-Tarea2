@@ -10,24 +10,24 @@ import (
 	"google.golang.org/grpc"
 )
 
-func doPlay(etapa int) [16]int {
-	var result [16]int
+func doPlay(etapa int) []int32 {
+	var result []int32
 	var jugada int32
 
 	if etapa == 1 {
 		fmt.Println("Por favor ingrese un numero del 1 al 10")
 		fmt.Scanln(&jugada)
-		for{
-			if (jugada >= 1 && jugada <= 10){
+		for {
+			if jugada >= 1 && jugada <= 10 {
 				break
-			}else {
+			} else {
 				fmt.Println("Por favor ingrese un numero del 1 al 10")
 				fmt.Scanln(&jugada)
 			}
 		}
-		result[0] = jugada
-		for i := 1; i < 16; i++ {
-			result[i] = rand.Intn(9) + 1
+		result = append(result, int32(jugada))
+		for i := 1; i < 15; i++ {
+			result = append(result, rand.Int31n(int32(9))+1)
 		}
 	}
 	return result
@@ -43,7 +43,6 @@ func main() {
 	defer conn.Close()
 	c := api.NewLiderClient(conn)
 
-	var jugada [16]int
 	var input string
 
 	fmt.Println("Para participar en el Juego del calamar ingrese participar ")
@@ -69,14 +68,18 @@ func main() {
 		if err != nil {
 			log.Fatalf("Error Call RPC: %v", err)
 		}
-		if !(response.Etapa = 1) {
-			break
+		if response.Etapa == 1 {
+			fmt.Println("Ha comenzado la primera etapa, Luz Verde, Luz Roja, ingrese un numero entre el 1 y el 10")
+			jugada := doPlay(1)
+			response, err := c.Jugar(context.Background(), &api.Jugadas{Plays: jugada})
+			if err != nil {
+				log.Fatalf("Error Call RPC: %v", err)
+			}
+			if response.Estado[0] == 0 {
+				fmt.Println("oh no! has muerto")
+				break
+			}
+			fmt.Println(response)
 		}
 	}
-	fmt.Println("Ha comenzado la primera etapa, Luz Verde, Luz Roja, ingrese un numero entre el 1 y el 10")
-	
-	jugada = doPlay(1)
-	
-	response, err = c.Jugar(context.Background(), &api.Jugadas{jugadas: jugada })
-
 }
