@@ -12,13 +12,12 @@ import (
 
 var jugadores int32 = 15
 var etapa_actual int32 = 0
-var ronda_atual int32 = 0
-var lider_e1_r1 int32 = -1
-var lider_e1_r2 int32 = -1
-var lider_e1_r3 int32 = -1
-var lider_e1_r4 int32 = -1
-var lider_e2 int32 = -1
-var lider_e3 int32 = -1
+
+var rnd_atual int32 = 0
+var pts_jugadores_e1 [16]int32= [16]int32{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+var est_jugadores_e1 [16]int32= [16]int32{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+var ganadores_e1 [16]int32= [16]int32{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+
 
 type server struct {
 	api.UnimplementedLiderServer
@@ -134,10 +133,16 @@ func (*server) Iniciar(ctx context.Context, in *api.Signal) (*api.Signal, error)
 	return &api.Signal{Sign: true}, nil
 }
 
-/*
+
 func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, error) {
+
+
+
 }
 
+
+
+/*
 func (*server) Monto(ctx context.Context, in *api.PedirMonto) (*api.MontoJugador, error) {
 
 }

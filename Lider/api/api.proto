@@ -27,7 +27,7 @@ message  Jugadas {
 }
 
 message  EstadoJugador {
-    string Estado =1;
+    repeated int32 Estado =1;
 }
 
 message PedirMonto {

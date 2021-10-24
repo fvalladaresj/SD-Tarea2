@@ -10,10 +10,22 @@ import (
 	"google.golang.org/grpc"
 )
 
-func doPlay(etapa int, playerMove int) [16]int {
+func doPlay(etapa int) [16]int {
 	var result [16]int
+	var jugada int32
+
 	if etapa == 1 {
-		result[0] = playerMove
+		fmt.Println("Por favor ingrese un numero del 1 al 10")
+		fmt.Scanln(&jugada)
+		for{
+			if (jugada >= 1 && jugada <= 10){
+				break
+			}else {
+				fmt.Println("Por favor ingrese un numero del 1 al 10")
+				fmt.Scanln(&jugada)
+			}
+		}
+		result[0] = jugada
 		for i := 1; i < 16; i++ {
 			result[i] = rand.Intn(9) + 1
 		}
@@ -31,6 +43,7 @@ func main() {
 	defer conn.Close()
 	c := api.NewLiderClient(conn)
 
+	var jugada [16]int
 	var input string
 
 	fmt.Println("Para participar en el Juego del calamar ingrese participar ")
@@ -61,8 +74,9 @@ func main() {
 		}
 	}
 	fmt.Println("Ha comenzado la primera etapa, Luz Verde, Luz Roja, ingrese un numero entre el 1 y el 10")
-	/*
-		response, err = c.Jugar(context.Background(), &api.Jugadas{jugadas: })
+	
+	jugada = doPlay(1)
+	
+	response, err = c.Jugar(context.Background(), &api.Jugadas{jugadas: jugada })
 
-	*/
 }
