@@ -56,7 +56,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("Error Call RPC: %v", err)
 		}
-		if !(response.Etapa == 1) {
+		if !(response.Etapa = 1) {
 			break
 		}
 	}
