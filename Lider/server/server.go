@@ -135,11 +135,12 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 		s1 := rand.NewSource(time.Now().UnixNano())
 		r1 := rand.New(s1)
 		leaderMove := r1.Int31n(int32(4)) + int32(6)
-		log.Printf("Lider: %v", leaderMove)
+		//log.Printf("Lider: %v", leaderMove)
 		for _, player := range players {
 			if moves[player] >= leaderMove {
 				est_jugadores[player] = 0 //muerto
-				log.Printf("Jugador %v ha muerto, tiro %v y tiene %v puntos", player, moves[player], pts_jugadores_e1[player])
+				//log.Printf("Jugador %v ha muerto, tiro %v y tiene %v puntos", player, moves[player], pts_jugadores_e1[player])
+				log.Printf("Jugador %v ha muerto", player)
 			} else {
 				pts_jugadores_e1[player] = pts_jugadores_e1[player] + moves[player]
 				if pts_jugadores_e1[player] >= 21 {
@@ -154,7 +155,8 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 			pts_jugadores_e1[player] = pts_jugadores_e1[player] + moves[player]
 			if pts_jugadores_e1[player] < 21 {
 				est_jugadores[player] = 0
-				log.Printf("Jugador %v ha muerto, tiro %v y tiene %v puntos", player, moves[player], pts_jugadores_e1[player])
+				//log.Printf("Jugador %v ha muerto, tiro %v y tiene %v puntos", player, moves[player], pts_jugadores_e1[player])
+				log.Printf("Jugador %v ha muerto", player)
 			} else {
 				ganadores_e1[player] = 1
 			}
