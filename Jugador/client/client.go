@@ -5,32 +5,52 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"time"
 
 	"github.com/fvalladaresj/SD-Tarea2/Lider/api"
 	"google.golang.org/grpc"
 )
 
-func doPlay(etapa int) []int32 {
+func doPlay(etapa int, gano bool) []int32 {
 	var result []int32
 	var jugada int32
 
+	rand.Seed(time.Now().UnixNano())
+
 	if etapa == 1 {
-		fmt.Println("Por favor ingrese un numero del 1 al 10")
-		fmt.Scanln(&jugada)
-		for {
-			if jugada >= 1 && jugada <= 10 {
-				break
-			} else {
-				fmt.Println("Por favor ingrese un numero del 1 al 10")
-				fmt.Scanln(&jugada)
+		if gano {
+			result = append(result, int32(0))
+			for i := 0; i < 15; i++ {
+				result = append(result, rand.Int31n(int32(9))+1)
+			}
+		} else {
+			fmt.Println("Por favor ingrese un numero del 1 al 10")
+			fmt.Scanln(&jugada)
+			for {
+				if jugada >= 1 && jugada <= 10 {
+					break
+				} else {
+					fmt.Println("Por favor ingrese un numero del 1 al 10")
+					fmt.Scanln(&jugada)
+				}
+			}
+			result = append(result, int32(jugada))
+			for i := 0; i < 15; i++ {
+				result = append(result, rand.Int31n(int32(9))+1)
 			}
 		}
-		result = append(result, int32(jugada))
-		for i := 1; i < 15; i++ {
-			result = append(result, rand.Int31n(int32(9))+1)
+	}
+	log.Printf("jugadas: %v", result)
+	return result
+}
+
+func checkWinner(status []int32) bool {
+	for i := 1; i < 16; i++ {
+		if status[i] == 1 {
+			return false
 		}
 	}
-	return result
+	return true
 }
 
 func main() {
@@ -69,8 +89,8 @@ func main() {
 			log.Fatalf("Error Call RPC: %v", err)
 		}
 		if response.Etapa == 1 {
-			fmt.Println("Ha comenzado la primera etapa, Luz Verde, Luz Roja, ingrese un numero entre el 1 y el 10")
-			jugada := doPlay(1)
+			fmt.Println("Jugando primera etapa \"Luz Roja, Luz Verde\"")
+			jugada := doPlay(1, false)
 			response, err := c.Jugar(context.Background(), &api.Jugadas{Plays: jugada})
 			if err != nil {
 				log.Fatalf("Error Call RPC: %v", err)
@@ -79,7 +99,21 @@ func main() {
 				fmt.Println("oh no! has muerto")
 				break
 			}
-			fmt.Println(response)
+			if checkWinner(response.Estado) {
+				fmt.Println("Felicitaciones has ganado el juego del calamar")
+				break
+			} else if response.JugadorGano == 1 {
+				fmt.Println("Felicitaciones por ganar la primera etapa, ingrese continuar para pasar a la siguiente etapa")
+				input := ' '
+				fmt.Scanln(&input)
+				if response.Ronda < 4 {
+					jugada := doPlay(1, true)
+					_, err := c.Jugar(context.Background(), &api.Jugadas{Plays: jugada})
+					if err != nil {
+						log.Fatalf("Error Call RPC: %v", err)
+					}
+				}
+			}
 		}
 	}
 }

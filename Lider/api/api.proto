@@ -28,6 +28,8 @@ message  Jugadas {
 
 message  EstadoJugador {
     repeated int32 Estado = 1;
+    int32 Ronda = 2;
+    int32 JugadorGano = 3;
 }
 
 message PedirMonto {

@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"net"
+	"time"
 
 	"github.com/fvalladaresj/SD-Tarea2/Lider/api"
 	"google.golang.org/grpc"
@@ -103,7 +104,6 @@ func (*server) ParticiparJuego(ctx context.Context, in *api.PeticionParticipar) 
 }
 
 func (*server) EstadoEtapas(ctx context.Context, in *api.Check) (*api.State, error) {
-
 	if etapa_actual == 0 {
 		return &api.State{Etapa: 0}, nil
 	} else if etapa_actual == 1 {
@@ -131,14 +131,15 @@ func (*server) Iniciar(ctx context.Context, in *api.Signal) (*api.Signal, error)
 func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, error) {
 	players := canPlay()
 	moves := in.Plays
-	log.Printf("Jugadores {%v}", players)
 	if rnd_actual < 3 && len(players) > 0 {
-		leaderMove := rand.Int31n(int32(4)) + int32(6)
-		log.Printf("Ronda %v el lider usar %v", rnd_actual, leaderMove)
+		s1 := rand.NewSource(time.Now().UnixNano())
+		r1 := rand.New(s1)
+		leaderMove := r1.Int31n(int32(4)) + int32(6)
+		log.Printf("Lider: %v", leaderMove)
 		for _, player := range players {
 			if moves[player] >= leaderMove {
 				est_jugadores[player] = 0 //muerto
-				log.Printf("Jugador %v ha muerto\n por usar %v", player, moves[player])
+				log.Printf("Jugador %v ha muerto, tiro %v y tiene %v puntos", player, moves[player], pts_jugadores_e1[player])
 			} else {
 				pts_jugadores_e1[player] = pts_jugadores_e1[player] + moves[player]
 				if pts_jugadores_e1[player] >= 21 {
@@ -147,16 +148,27 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 			}
 		}
 		rnd_actual = rnd_actual + 1
-		return &api.EstadoJugador{Estado: est_jugadores}, nil
+		return &api.EstadoJugador{Estado: est_jugadores, Ronda: rnd_actual, JugadorGano: ganadores_e1[0]}, nil
 	} else {
 		for _, player := range players {
+			pts_jugadores_e1[player] = pts_jugadores_e1[player] + moves[player]
 			if pts_jugadores_e1[player] < 21 {
-				est_jugadores[player] = 0 //muerto owo
+				est_jugadores[player] = 0
+				log.Printf("Jugador %v ha muerto, tiro %v y tiene %v puntos", player, moves[player], pts_jugadores_e1[player])
+			} else {
+				ganadores_e1[player] = 1
 			}
 		}
 		rnd_actual = 0
 		etapa_actual = 2
-		return &api.EstadoJugador{Estado: est_jugadores}, nil
+		fmt.Print("Jugadores vivos: ")
+		for i := range est_jugadores {
+			if est_jugadores[i] == 1 {
+				fmt.Printf("%v ", i)
+			}
+		}
+		fmt.Println()
+		return &api.EstadoJugador{Estado: est_jugadores, Ronda: 4, JugadorGano: ganadores_e1[0]}, nil
 	}
 }
 
@@ -169,7 +181,7 @@ func (*server) Monto(ctx context.Context, in *api.PedirMonto) (*api.MontoJugador
 
 func canPlay() []int32 {
 	var result []int32
-	for i := 0; i < 15; i++ {
+	for i := range est_jugadores {
 		// si esta vivo y no ha ganado la etapa
 		if est_jugadores[i] == 1 && ganadores_e1[i] == 0 {
 			result = append(result, int32(i))
