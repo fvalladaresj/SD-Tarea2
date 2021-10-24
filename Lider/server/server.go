@@ -10,6 +10,16 @@ import (
 	"google.golang.org/grpc"
 )
 
+var jugadores int32 = 15
+var etapa_actual int32 = 0
+var ronda_atual int32 = 0
+var lider_e1_r1 int32 = -1
+var lider_e1_r2 int32 = -1
+var lider_e1_r3 int32 = -1
+var lider_e1_r4 int32 = -1
+var lider_e2 int32 = -1
+var lider_e3 int32 = -1
+
 type server struct {
 	api.UnimplementedLiderServer
 }
@@ -32,25 +42,54 @@ func main() {
 		log.Fatalf("failed to serve: %s", err)
 	}
 
+
+
 }
 
-var jugadores int32 = 15
-var etapa_actual int32 = 0
-var ronda_atual int32 = 0
-var lider_e1_r1 int32 = -1
-var lider_e1_r2 int32 = -1
-var lider_e1_r3 int32 = -1
-var lider_e1_r4 int32 = -1
-var lider_e2 int32 = -1
-var lider_e3 int32 = -1
+
+func interfaz (decision string){
+	var dec string = decision
+	for {
+		if (dec == "1" || dec == "2" ){
+			break
+		}else{
+			fmt.Println("No ha ingresado una opcion valida por favor ingrese 1 o 2")
+			fmt.Scanln(&dec)
+		}
+	}
+
+	if (decision == "1"){
+		etapa_actual = etapa_actual + 1
+	}else if (decision == "2"){
+		
+	}else{
+		
+	}
+}
+
 
 func manageInput() {
+
+	var input string
+
+	fmt.Println("Bienvenido Lider, por favor espere a que hayan 16 jugadores para iniciar la partida")
+	
 	for {
-		input := ""
-		fmt.Println("ingrese algo:")
-		fmt.Scanln(&input)
-		fmt.Println(input)
+		if !(jugadores != 16){
+			break
+		}
 	}
+
+	fmt.Println("Ya hay 16 Jugadores, ahora puede dar inicio a la primera etapa")
+	fmt.Println("Indique el numero de la una de las siguientes acciones a realizar:")	
+	fmt.Println("1. Iniciar Primera etapa")	
+	fmt.Println("2. Consultar Jugadas de un jugador")			
+	
+	fmt.Scanln(&input)
+
+	interfaz(input)
+
+	
 }
 
 func (*server) ParticiparJuego(ctx context.Context, in *api.PeticionParticipar) (*api.ConfirmacionParticipacion, error) {
@@ -70,13 +109,19 @@ func (*server) ParticiparJuego(ctx context.Context, in *api.PeticionParticipar) 
 }
 
 func (*server) EstadoEtapas(ctx context.Context, in *api.Check) (*api.State, error) {
+	
 	if etapa_actual == 0 {
 		return &api.State{Etapa: 0}, nil
-	}
-	if etapa_actual == 1 {
+	}else if etapa_actual == 1 {
 		return &api.State{Etapa: 1}, nil
-	} else {
-		return &api.State{Etapa: 1}, nil
+	}else if etapa_actual == 2{
+		return &api.State{Etapa: 2}, nil
+	}else if etapa_actual == 3{
+		return &api.State{Etapa: 3}, nil
+	}else if etapa_actual == 4{
+		return &api.State{Etapa: 4}, nil
+	}else {
+		return &api.State{Etapa: 9}, nil
 	}
 }
 
@@ -96,4 +141,5 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 func (*server) Monto(ctx context.Context, in *api.PedirMonto) (*api.MontoJugador, error) {
 
 }
+
 */
