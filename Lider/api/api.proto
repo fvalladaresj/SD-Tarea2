@@ -24,6 +24,7 @@ message  ConfirmacionParticipacion {
 
 message  Jugadas {
     repeated int32 Plays = 1;
+    int32 Etapa = 2;
 }
 
 message  EstadoJugador {
