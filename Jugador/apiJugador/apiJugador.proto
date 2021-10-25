@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package apiJugador;
+
+option go_package = "/apiJugador";
+
+service DataNodeJugador{
+    rpc EscribirJugada (JugadaJugador) returns (Signal) {}
+    rpc RetornarJugadas (Jugador) returns (TodasLasJugadas) {}
+}
+
+message JugadaJugador {
+    int32 IdJugador = 1;
+    int32 Jugada = 2;
+    int32 Etapa = 3;
+}
+
+message Signal{
+    bool Sign = 1;
+}
+
+message Jugador{
+    int32 IdJugador = 1;
+}
+
+message TodasLasJugadas {
+    string  JugadasJugador = 1;
+}
