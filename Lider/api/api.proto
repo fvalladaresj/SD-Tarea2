@@ -12,6 +12,7 @@ service Lider{
     rpc EstadoEtapas (Check) returns (State) {}
     rpc Iniciar (Signal) returns (Signal) {}
     rpc CuantosJugadores (Signal) returns (CantidadJugadores) {}
+    rpc EscribirJugada (JugadaJugador) returns (Signal) {}
 }
 
 message  PeticionParticipar {
@@ -55,4 +56,10 @@ message Signal{
 
 message CantidadJugadores{
     int32 CJugadores = 1;
+}
+
+message JugadaJugador {
+    int32 IdJugador = 1;
+    int32 Jugada = 2;
+    int32 Etapa = 3;
 }
