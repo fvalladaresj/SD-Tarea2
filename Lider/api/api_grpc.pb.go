@@ -24,6 +24,7 @@ type LiderClient interface {
 	EstadoEtapas(ctx context.Context, in *Check, opts ...grpc.CallOption) (*State, error)
 	Iniciar(ctx context.Context, in *Signal, opts ...grpc.CallOption) (*Signal, error)
 	CuantosJugadores(ctx context.Context, in *Signal, opts ...grpc.CallOption) (*CantidadJugadores, error)
+	EscribirJugada(ctx context.Context, in *JugadaJugador, opts ...grpc.CallOption) (*Signal, error)
 }
 
 type liderClient struct {
@@ -88,6 +89,15 @@ func (c *liderClient) CuantosJugadores(ctx context.Context, in *Signal, opts ...
 	return out, nil
 }
 
+func (c *liderClient) EscribirJugada(ctx context.Context, in *JugadaJugador, opts ...grpc.CallOption) (*Signal, error) {
+	out := new(Signal)
+	err := c.cc.Invoke(ctx, "/api.Lider/EscribirJugada", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LiderServer is the server API for Lider service.
 // All implementations must embed UnimplementedLiderServer
 // for forward compatibility
@@ -98,6 +108,7 @@ type LiderServer interface {
 	EstadoEtapas(context.Context, *Check) (*State, error)
 	Iniciar(context.Context, *Signal) (*Signal, error)
 	CuantosJugadores(context.Context, *Signal) (*CantidadJugadores, error)
+	EscribirJugada(context.Context, *JugadaJugador) (*Signal, error)
 	mustEmbedUnimplementedLiderServer()
 }
 
@@ -122,6 +133,9 @@ func (UnimplementedLiderServer) Iniciar(context.Context, *Signal) (*Signal, erro
 }
 func (UnimplementedLiderServer) CuantosJugadores(context.Context, *Signal) (*CantidadJugadores, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CuantosJugadores not implemented")
+}
+func (UnimplementedLiderServer) EscribirJugada(context.Context, *JugadaJugador) (*Signal, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EscribirJugada not implemented")
 }
 func (UnimplementedLiderServer) mustEmbedUnimplementedLiderServer() {}
 
@@ -244,6 +258,24 @@ func _Lider_CuantosJugadores_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Lider_EscribirJugada_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(JugadaJugador)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LiderServer).EscribirJugada(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.Lider/EscribirJugada",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LiderServer).EscribirJugada(ctx, req.(*JugadaJugador))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Lider_ServiceDesc is the grpc.ServiceDesc for Lider service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -274,6 +306,10 @@ var Lider_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CuantosJugadores",
 			Handler:    _Lider_CuantosJugadores_Handler,
+		},
+		{
+			MethodName: "EscribirJugada",
+			Handler:    _Lider_EscribirJugada_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

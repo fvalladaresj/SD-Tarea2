@@ -6,9 +6,13 @@ import (
 	"log"
 	"math/rand"
 	"net"
+	"os"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/fvalladaresj/SD-Tarea2/Lider/api"
+
 	"google.golang.org/grpc"
 )
 
@@ -234,6 +238,30 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 		}
 		return &api.EstadoJugador{Estado: est_jugadores}, nil
 	}
+}
+
+func (*server) EscribirJugada(ctx context.Context, in *api.JugadaJugador) (*api.Signal, error) {
+
+	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
+	var str_Jugada string = strconv.FormatInt(int64(in.Jugada), 10)
+	var str_Etapa string = strconv.FormatInt(int64(in.Etapa), 10)
+
+	str := []string{"jugador_", str_Idjugador, "__ronda", str_Etapa, ".txt"}
+
+	var nombre_archivo string = strings.Join(str, "")
+
+	f, err := os.OpenFile(nombre_archivo, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err2 := f.WriteString(str_Jugada + "\n")
+
+	if err2 != nil {
+		log.Fatal(err2)
+	}
+
+	return &api.Signal{Sign: true}, nil
+
 }
 
 /*
