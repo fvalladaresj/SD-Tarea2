@@ -1,0 +1,10 @@
+Jugador_15 Ronda_1 100000000
+Jugador_12 Ronda_1 200000000
+Jugador_6 Ronda_1 300000000
+Jugador_2 Ronda_1 400000000
+Jugador_4 Ronda_1 500000000
+Jugador_8 Ronda_1 600000000
+Jugador_3 Ronda_1 700000000
+Jugador_11 Ronda_1 800000000
+Jugador_0 Ronda_1 900000000
+Jugador_7 Ronda_1 1000000000

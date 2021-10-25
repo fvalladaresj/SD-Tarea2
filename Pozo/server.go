@@ -2,23 +2,15 @@ package main
 
 import (
 	"log"
+	"os"
+	"strconv"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-var pozo = 0
+var pool = 0
 
 func main() {
-	go Rabbit()
-}
-
-func failOnError(err error, msg string) {
-	if err != nil {
-		log.Fatalf("%s: %s", msg, err)
-	}
-}
-
-func Rabbit() {
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
@@ -53,9 +45,32 @@ func Rabbit() {
 	go func() {
 		for d := range msgs {
 			log.Printf("Received a message: %s", d.Body)
+			pool += 100000000
+			EscribirMuerto(string(d.Body), pool)
 		}
 	}()
 
-	pozo += 100000000
 	<-forever
+}
+
+func failOnError(err error, msg string) {
+	if err != nil {
+		log.Fatalf("%s: %s", msg, err)
+	}
+}
+
+func EscribirMuerto(deathInfo string, pool int) {
+	strPool := strconv.FormatInt(int64(pool), 10)
+
+	toWrite := deathInfo + " " + strPool
+
+	f, err := os.OpenFile("Pool.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err2 := f.WriteString(toWrite + "\n")
+
+	if err2 != nil {
+		log.Fatal(err2)
+	}
 }
