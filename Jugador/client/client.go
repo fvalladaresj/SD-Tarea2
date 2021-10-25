@@ -120,7 +120,7 @@ func main() {
 		if response.Etapa == 1 {
 			fmt.Println("Jugando primera etapa \"Luz Roja, Luz Verde\"")
 			jugada := doPlay(1, false)
-			response, err := c.Jugar(context.Background(), &api.Jugadas{Plays: jugada})
+			response, err := c.Jugar(context.Background(), &api.Jugadas{Etapa: int32(1), Plays: jugada})
 			if err != nil {
 				log.Fatalf("Error Call RPC: %v", err)
 			}
@@ -137,7 +137,7 @@ func main() {
 				fmt.Scanln(&input)
 				if response.Ronda < 4 {
 					jugada := doPlay(1, true)
-					_, err := c.Jugar(context.Background(), &api.Jugadas{Plays: jugada})
+					_, err := c.Jugar(context.Background(), &api.Jugadas{Etapa: int32(1), Plays: jugada})
 					if err != nil {
 						log.Fatalf("Error Call RPC: %v", err)
 					}
