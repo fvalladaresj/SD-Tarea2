@@ -22,9 +22,9 @@ type LiderClient interface {
 	Jugar(ctx context.Context, in *Jugadas, opts ...grpc.CallOption) (*EstadoJugador, error)
 	Monto(ctx context.Context, in *PedirMonto, opts ...grpc.CallOption) (*MontoJugador, error)
 	EstadoEtapas(ctx context.Context, in *Check, opts ...grpc.CallOption) (*State, error)
-	Iniciar(ctx context.Context, in *Signal, opts ...grpc.CallOption) (*Signal, error)
 	CuantosJugadores(ctx context.Context, in *Signal, opts ...grpc.CallOption) (*CantidadJugadores, error)
 	EscribirJugada(ctx context.Context, in *JugadaJugador, opts ...grpc.CallOption) (*Signal, error)
+	RetornarJugadas(ctx context.Context, in *JugadorYEtapa, opts ...grpc.CallOption) (*JugadasArchivo, error)
 }
 
 type liderClient struct {
@@ -71,15 +71,6 @@ func (c *liderClient) EstadoEtapas(ctx context.Context, in *Check, opts ...grpc.
 	return out, nil
 }
 
-func (c *liderClient) Iniciar(ctx context.Context, in *Signal, opts ...grpc.CallOption) (*Signal, error) {
-	out := new(Signal)
-	err := c.cc.Invoke(ctx, "/api.Lider/Iniciar", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *liderClient) CuantosJugadores(ctx context.Context, in *Signal, opts ...grpc.CallOption) (*CantidadJugadores, error) {
 	out := new(CantidadJugadores)
 	err := c.cc.Invoke(ctx, "/api.Lider/CuantosJugadores", in, out, opts...)
@@ -98,6 +89,15 @@ func (c *liderClient) EscribirJugada(ctx context.Context, in *JugadaJugador, opt
 	return out, nil
 }
 
+func (c *liderClient) RetornarJugadas(ctx context.Context, in *JugadorYEtapa, opts ...grpc.CallOption) (*JugadasArchivo, error) {
+	out := new(JugadasArchivo)
+	err := c.cc.Invoke(ctx, "/api.Lider/RetornarJugadas", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LiderServer is the server API for Lider service.
 // All implementations must embed UnimplementedLiderServer
 // for forward compatibility
@@ -106,9 +106,9 @@ type LiderServer interface {
 	Jugar(context.Context, *Jugadas) (*EstadoJugador, error)
 	Monto(context.Context, *PedirMonto) (*MontoJugador, error)
 	EstadoEtapas(context.Context, *Check) (*State, error)
-	Iniciar(context.Context, *Signal) (*Signal, error)
 	CuantosJugadores(context.Context, *Signal) (*CantidadJugadores, error)
 	EscribirJugada(context.Context, *JugadaJugador) (*Signal, error)
+	RetornarJugadas(context.Context, *JugadorYEtapa) (*JugadasArchivo, error)
 	mustEmbedUnimplementedLiderServer()
 }
 
@@ -128,14 +128,14 @@ func (UnimplementedLiderServer) Monto(context.Context, *PedirMonto) (*MontoJugad
 func (UnimplementedLiderServer) EstadoEtapas(context.Context, *Check) (*State, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EstadoEtapas not implemented")
 }
-func (UnimplementedLiderServer) Iniciar(context.Context, *Signal) (*Signal, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Iniciar not implemented")
-}
 func (UnimplementedLiderServer) CuantosJugadores(context.Context, *Signal) (*CantidadJugadores, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CuantosJugadores not implemented")
 }
 func (UnimplementedLiderServer) EscribirJugada(context.Context, *JugadaJugador) (*Signal, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EscribirJugada not implemented")
+}
+func (UnimplementedLiderServer) RetornarJugadas(context.Context, *JugadorYEtapa) (*JugadasArchivo, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RetornarJugadas not implemented")
 }
 func (UnimplementedLiderServer) mustEmbedUnimplementedLiderServer() {}
 
@@ -222,24 +222,6 @@ func _Lider_EstadoEtapas_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Lider_Iniciar_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Signal)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(LiderServer).Iniciar(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.Lider/Iniciar",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LiderServer).Iniciar(ctx, req.(*Signal))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Lider_CuantosJugadores_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Signal)
 	if err := dec(in); err != nil {
@@ -276,6 +258,24 @@ func _Lider_EscribirJugada_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Lider_RetornarJugadas_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(JugadorYEtapa)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LiderServer).RetornarJugadas(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.Lider/RetornarJugadas",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LiderServer).RetornarJugadas(ctx, req.(*JugadorYEtapa))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Lider_ServiceDesc is the grpc.ServiceDesc for Lider service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -300,16 +300,16 @@ var Lider_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Lider_EstadoEtapas_Handler,
 		},
 		{
-			MethodName: "Iniciar",
-			Handler:    _Lider_Iniciar_Handler,
-		},
-		{
 			MethodName: "CuantosJugadores",
 			Handler:    _Lider_CuantosJugadores_Handler,
 		},
 		{
 			MethodName: "EscribirJugada",
 			Handler:    _Lider_EscribirJugada_Handler,
+		},
+		{
+			MethodName: "RetornarJugadas",
+			Handler:    _Lider_RetornarJugadas_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

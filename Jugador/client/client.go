@@ -131,9 +131,10 @@ func main() {
 			if checkWinner(response.Estado) {
 				fmt.Println("Felicitaciones has ganado el juego del calamar")
 				break
-			} else if response.JugadorGano == 1 {
+			}
+			if response.JugadorGano == 1 {
 				fmt.Println("Felicitaciones por ganar la primera etapa, ingrese continuar para pasar a la siguiente etapa")
-				input := ' '
+				var input string
 				fmt.Scanln(&input)
 				if response.Ronda < 4 {
 					jugada := doPlay(1, true)
@@ -145,4 +146,55 @@ func main() {
 			}
 		}
 	}
+
+	fmt.Println("Espere a las instrucciones para comenzar la segunda etapa")
+
+	for {
+		response, err := c.EstadoEtapas(context.Background(), &api.Check{Sign: true})
+		if err != nil {
+			log.Fatalf("Error Call RPC: %v", err)
+		}
+		if response.Etapa == 2 {
+			fmt.Println("Jugando segunda etapa \"Tirar la cuerda\"")
+			jugada := doPlay(2, false)
+			response, err := c.Jugar(context.Background(), &api.Jugadas{Etapa: int32(2), Plays: jugada})
+			if err != nil {
+				log.Fatalf("Error Call RPC: %v", err)
+			}
+			if response.Estado[0] == 0 {
+				fmt.Println("oh no! has muerto")
+				break
+			}
+			if checkWinner(response.Estado) {
+				fmt.Println("Felicitaciones has ganado el juego del calamar")
+				break
+			}
+		}
+	}
+
+	fmt.Println("Espere a las instrucciones para comenzar la tercera y ultima etapa")
+
+	for {
+		response, err := c.EstadoEtapas(context.Background(), &api.Check{Sign: true})
+		if err != nil {
+			log.Fatalf("Error Call RPC: %v", err)
+		}
+		if response.Etapa == 3 {
+			fmt.Println("Jugando tercera etapa \"Todo o Nada\"")
+			jugada := doPlay(3, false)
+			response, err := c.Jugar(context.Background(), &api.Jugadas{Etapa: int32(3), Plays: jugada})
+			if err != nil {
+				log.Fatalf("Error Call RPC: %v", err)
+			}
+			if response.Estado[0] == 0 {
+				fmt.Println("oh no! has muerto")
+				break
+			}
+			if checkWinner(response.Estado) {
+				fmt.Println("Felicitaciones has ganado el juego del calamar")
+				break
+			}
+		}
+	}
+
 }

@@ -10,9 +10,9 @@ service Lider{
     rpc Jugar (Jugadas) returns (EstadoJugador) {}
     rpc Monto (PedirMonto) returns (MontoJugador) {}
     rpc EstadoEtapas (Check) returns (State) {}
-    rpc Iniciar (Signal) returns (Signal) {}
     rpc CuantosJugadores (Signal) returns (CantidadJugadores) {}
     rpc EscribirJugada (JugadaJugador) returns (Signal) {}
+    rpc RetornarJugadas (JugadorYEtapa) returns (JugadasArchivo) {}
 }
 
 message  PeticionParticipar {
@@ -62,4 +62,14 @@ message JugadaJugador {
     int32 IdJugador = 1;
     int32 Jugada = 2;
     int32 Etapa = 3;
+}
+
+message JugadorYEtapa{
+    int32 IdJugador = 1;
+    int32 NroEtapa = 2;
+
+}
+
+message JugadasArchivo {
+    string  JugadasJugador = 1;
 }

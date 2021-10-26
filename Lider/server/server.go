@@ -20,6 +20,10 @@ var jugadores int32 = 15
 var est_jugadores []int32 = []int32{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 var etapa_actual int32 = 0
 
+var etapa_check_1 bool = true
+var etapa_check_2 bool = false
+var etapa_check_3 bool = false
+
 var rnd_actual int32 = 0
 var pts_jugadores_e1 [16]int32 = [16]int32{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 var ganadores_e1 [16]int32 = [16]int32{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
@@ -49,7 +53,9 @@ func main() {
 }
 
 func interfaz(decision string) {
+
 	var dec string = decision
+
 	for {
 		if dec == "1" || dec == "2" {
 			break
@@ -73,23 +79,41 @@ func manageInput() {
 	var input string
 
 	fmt.Println("Bienvenido Lider, por favor espere a que hayan 16 jugadores para iniciar la partida")
-
 	for {
 		if !(jugadores != 16) {
 			break
 		}
 	}
 
-	fmt.Println("Ya hay 16 Jugadores, ahora puede dar inicio a la primera etapa")
-	fmt.Println("Indique el numero de la una de las siguientes acciones a realizar:")
-	fmt.Println("1. Iniciar Primera etapa")
-	fmt.Println("2. Consultar Jugadas de un jugador")
+	for {
 
-	fmt.Scanln(&input)
-
-	interfaz(input)
-
+		if etapa_actual == 0 && etapa_check_1 {
+			etapa_check_1 = false
+			fmt.Println("Ya hay 16 Jugadores, ahora puede dar inicio a la primera etapa")
+			fmt.Println("Indique el numero de la una de las siguientes acciones a realizar:")
+			fmt.Println("1. Iniciar primera etapa")
+			fmt.Println("2. Consultar Jugadas de un jugador")
+			fmt.Scanln(&input)
+			interfaz(input)
+		} else if etapa_actual == 1 && etapa_check_2 {
+			etapa_check_2 = false
+			fmt.Println("Indique el numero de la una de las siguientes acciones a realizar:")
+			fmt.Println("1. Iniciar la segunda etapa")
+			fmt.Println("2. Consultar Jugadas de un jugador")
+			fmt.Scanln(&input)
+			interfaz(input)
+		} else if etapa_actual == 3 && etapa_check_3 {
+			etapa_check_3 = false
+			fmt.Println("Indique el numero de la una de las siguientes acciones a realizar:")
+			fmt.Println("1. Iniciar la segunda etapa")
+			fmt.Println("2. Consultar Jugadas de un jugador")
+			fmt.Scanln(&input)
+			interfaz(input)
+		}
+	}
 }
+
+/////////////////////////////////////////////// Metodos GRCP /////////////////////////////////////////////////////////////
 
 func (*server) ParticiparJuego(ctx context.Context, in *api.PeticionParticipar) (*api.ConfirmacionParticipacion, error) {
 	if in.Participar == "participar" {
@@ -125,11 +149,6 @@ func (*server) EstadoEtapas(ctx context.Context, in *api.Check) (*api.State, err
 
 func (*server) CuantosJugadores(ctx context.Context, in *api.Signal) (*api.CantidadJugadores, error) {
 	return &api.CantidadJugadores{CJugadores: jugadores}, nil
-}
-
-func (*server) Iniciar(ctx context.Context, in *api.Signal) (*api.Signal, error) {
-	etapa_actual = etapa_actual + 1
-	return &api.Signal{Sign: true}, nil
 }
 
 func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, error) {
@@ -168,14 +187,13 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 					ganadores_e1[player] = 1
 				}
 			}
-			rnd_actual = 0
-			etapa_actual = 2
 			fmt.Print("Etapa 1 finalizada, jugadores vivos: ")
 			for i := range est_jugadores {
 				if est_jugadores[i] == 1 {
 					fmt.Printf("%v ", i)
 				}
 			}
+			etapa_check_2 = true
 			fmt.Println()
 			return &api.EstadoJugador{Estado: est_jugadores, Ronda: 4, JugadorGano: ganadores_e1[0]}, nil
 		}
@@ -266,12 +284,32 @@ func (*server) EscribirJugada(ctx context.Context, in *api.JugadaJugador) (*api.
 
 }
 
+func (*server) RetornarJugadas(ctx context.Context, in *api.JugadorYEtapa) (*api.JugadasArchivo, error) {
+
+	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
+	var str_NroEtapa string = strconv.FormatInt(int64(in.NroEtapa), 10)
+
+	var nombre_archivo string = "jugador_" + str_Idjugador + "__ronda" + str_NroEtapa + ".txt"
+
+	content, err := os.ReadFile(nombre_archivo)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var string_content string = string(content)
+
+	return &api.JugadasArchivo{JugadasJugador: string_content}, nil
+
+}
+
 /*
 func (*server) Monto(ctx context.Context, in *api.PedirMonto) (*api.MontoJugador, error) {
 
 }
 
 */
+
+////////////////////////////////////////////////////////// Funciones varias//////////////////////////////////////////////
 
 func canPlayPhase1() []int32 {
 	var result []int32

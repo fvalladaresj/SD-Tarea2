@@ -57,3 +57,21 @@ func (*server) EscribirJugada(ctx context.Context, in *apiJugador.JugadaJugador)
 	return &apiJugador.Signal{Sign: true}, nil
 
 }
+
+func (*server) RetornarJugadas(ctx context.Context, in *apiJugador.JugadorYEtapa) (*apiJugador.JugadasArchivo, error) {
+
+	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
+	var str_NroEtapa string = strconv.FormatInt(int64(in.NroEtapa), 10)
+
+	var nombre_archivo string = "jugador_" + str_Idjugador + "__ronda" + str_NroEtapa + ".txt"
+
+	content, err := os.ReadFile(nombre_archivo)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var string_content string = string(content)
+
+	return &apiJugador.JugadasArchivo{JugadasJugador: string_content}, nil
+
+}

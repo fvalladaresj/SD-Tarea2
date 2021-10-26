@@ -19,6 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DataNodeJugadorClient interface {
 	EscribirJugada(ctx context.Context, in *JugadaJugador, opts ...grpc.CallOption) (*Signal, error)
+	RetornarJugadas(ctx context.Context, in *JugadorYEtapa, opts ...grpc.CallOption) (*JugadasArchivo, error)
 }
 
 type dataNodeJugadorClient struct {
@@ -38,11 +39,21 @@ func (c *dataNodeJugadorClient) EscribirJugada(ctx context.Context, in *JugadaJu
 	return out, nil
 }
 
+func (c *dataNodeJugadorClient) RetornarJugadas(ctx context.Context, in *JugadorYEtapa, opts ...grpc.CallOption) (*JugadasArchivo, error) {
+	out := new(JugadasArchivo)
+	err := c.cc.Invoke(ctx, "/apiJugador.DataNodeJugador/RetornarJugadas", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DataNodeJugadorServer is the server API for DataNodeJugador service.
 // All implementations must embed UnimplementedDataNodeJugadorServer
 // for forward compatibility
 type DataNodeJugadorServer interface {
 	EscribirJugada(context.Context, *JugadaJugador) (*Signal, error)
+	RetornarJugadas(context.Context, *JugadorYEtapa) (*JugadasArchivo, error)
 	mustEmbedUnimplementedDataNodeJugadorServer()
 }
 
@@ -52,6 +63,9 @@ type UnimplementedDataNodeJugadorServer struct {
 
 func (UnimplementedDataNodeJugadorServer) EscribirJugada(context.Context, *JugadaJugador) (*Signal, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EscribirJugada not implemented")
+}
+func (UnimplementedDataNodeJugadorServer) RetornarJugadas(context.Context, *JugadorYEtapa) (*JugadasArchivo, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RetornarJugadas not implemented")
 }
 func (UnimplementedDataNodeJugadorServer) mustEmbedUnimplementedDataNodeJugadorServer() {}
 
@@ -84,6 +98,24 @@ func _DataNodeJugador_EscribirJugada_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DataNodeJugador_RetornarJugadas_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(JugadorYEtapa)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataNodeJugadorServer).RetornarJugadas(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/apiJugador.DataNodeJugador/RetornarJugadas",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataNodeJugadorServer).RetornarJugadas(ctx, req.(*JugadorYEtapa))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DataNodeJugador_ServiceDesc is the grpc.ServiceDesc for DataNodeJugador service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -94,6 +126,10 @@ var DataNodeJugador_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "EscribirJugada",
 			Handler:    _DataNodeJugador_EscribirJugada_Handler,
+		},
+		{
+			MethodName: "RetornarJugadas",
+			Handler:    _DataNodeJugador_RetornarJugadas_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

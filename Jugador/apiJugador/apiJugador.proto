@@ -6,7 +6,7 @@ option go_package = "/apiJugador";
 
 service DataNodeJugador{
     rpc EscribirJugada (JugadaJugador) returns (Signal) {}
-    rpc RetornarJugadas (Jugador) returns (TodasLasJugadas) {}
+    rpc RetornarJugadas (JugadorYEtapa) returns (JugadasArchivo) {}
 }
 
 message JugadaJugador {
@@ -19,10 +19,12 @@ message Signal{
     bool Sign = 1;
 }
 
-message Jugador{
+message JugadorYEtapa{
     int32 IdJugador = 1;
+    int32 NroEtapa = 2;
+
 }
 
-message TodasLasJugadas {
+message JugadasArchivo {
     string  JugadasJugador = 1;
 }
