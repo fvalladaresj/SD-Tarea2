@@ -2,15 +2,38 @@ package main
 
 import (
 	"log"
+	"net"
 	"os"
 	"strconv"
 
+	"github.com/fvalladaresj/SD-Tarea2/Jugador/apiPozo"
 	amqp "github.com/rabbitmq/amqp091-go"
+	"google.golang.org/grpc"
 )
 
 var pool = 0
 
+type server struct {
+	apiPozo.UnimplementedDataNodePozoServer
+}
+
 func main() {
+	// create a listener on TCP port 50054
+	lis, err := net.Listen("tcp", "0.0.0.0:50054")
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	// create a server instance
+	s := grpc.NewServer()
+	// attach the Lider service to the server
+	apiPozo.RegisterDDataNodePozoServer(s, &server{})
+	// start the server
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %s", err)
+	}
+}
+
+func listenRabbit() {
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
