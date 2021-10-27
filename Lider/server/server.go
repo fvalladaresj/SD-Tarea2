@@ -158,7 +158,8 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 		if rnd_actual < 3 && len(players) > 0 {
 			rand.Seed(time.Now().UnixNano())
 
-			leaderMove := rand.Int31n(int32(4)) + int32(6)
+			//leaderMove := rand.Int31n(int32(4)) + int32(6)
+			var leaderMove int32 = 10
 			//log.Printf("Lider: %v", leaderMove)
 			for _, player := range players {
 				if moves[player] >= leaderMove {
