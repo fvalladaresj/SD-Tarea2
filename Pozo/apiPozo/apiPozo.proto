@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package apiPozo;
+
+option go_package = "/apiPozo";
+
+service DataNodePozo{
+    rpc EscribirJugada (JugadaJugador) returns (Signal) {}
+    rpc RetornarJugadas (JugadorYEtapa) returns (JugadasArchivo) {}
+}
+
+message JugadaJugador {
+    int32 IdJugador = 1;
+    int32 Jugada = 2;
+    int32 Etapa = 3;
+}
+
+message Signal{
+    bool Sign = 1;
+}
+
+message JugadorYEtapa{
+    int32 IdJugador = 1;
+    int32 NroEtapa = 2;
+
+}
+
+message JugadasArchivo {
+    string  JugadasJugador = 1;
+}
