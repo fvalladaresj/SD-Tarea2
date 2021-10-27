@@ -5,8 +5,13 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"net"
+	"os"
+	"strconv"
+	"strings"
 	"time"
 
+	"github.com/fvalladaresj/SD-Tarea2/Jugador/apiJugador"
 	"github.com/fvalladaresj/SD-Tarea2/Lider/api"
 	"google.golang.org/grpc"
 )
@@ -82,8 +87,29 @@ func checkWinner(status []int32) bool {
 	return true
 }
 
-func main() {
+type server struct {
+	apiJugador.UnimplementedDataNodeJugadorServer
+}
 
+func main() {
+	go manageInput()
+	// create a listener on TCP port 50053
+	lis, err := net.Listen("tcp", "0.0.0.0:50053")
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	// create a server instance
+	s := grpc.NewServer()
+	// attach the Lider service to the server
+	apiJugador.RegisterDataNodeJugadorServer(s, &server{})
+	// start the server
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %s", err)
+	}
+
+}
+
+func manageInput() {
 	var etapa_jugada1 bool = false
 	var etapa_jugada2 bool = false
 	var etapa_jugada3 bool = false
@@ -157,7 +183,6 @@ func main() {
 		}
 
 		if response.Etapa == 2 && etapa_jugada2 == false {
-			etapa_jugada2 = true
 			fmt.Println("Jugando segunda etapa \"Tirar la cuerda\"")
 			jugada := doPlay(2, false)
 			response, err := c.Jugar(context.Background(), &api.Jugadas{Etapa: int32(2), Plays: jugada})
@@ -168,6 +193,14 @@ func main() {
 				fmt.Println("oh no! has muerto")
 				break
 			}
+			if response.JugadorGano == 1 {
+				fmt.Println("Felicitaciones por ganar la segunda etapa, ingrese continuar para pasar a la siguiente etapa")
+				var input string
+				fmt.Scanln(&input)
+				etapa_jugada2 = true
+				fmt.Println("Espere a las instrucciones para comenzar la tercera etapa")
+				continue
+			}
 			if checkWinner(response.Estado) {
 				fmt.Println("Felicitaciones has ganado el juego del calamar")
 				break
@@ -175,7 +208,6 @@ func main() {
 		}
 
 		if response.Etapa == 3 && etapa_jugada3 == false {
-			etapa_jugada3 = true
 			fmt.Println("Jugando tercera etapa \"Todo o Nada\"")
 			jugada := doPlay(3, false)
 			response, err := c.Jugar(context.Background(), &api.Jugadas{Etapa: int32(3), Plays: jugada})
@@ -186,60 +218,56 @@ func main() {
 				fmt.Println("oh no! has muerto")
 				break
 			}
-			if checkWinner(response.Estado) {
+			if response.JugadorGano == 1 {
+				fmt.Println("Felicitaciones por ganar la tercera etapa, ingrese continuar para pasar a la siguiente etapa")
+				var input string
+				fmt.Scanln(&input)
+				etapa_jugada3 = true
 				fmt.Println("Felicitaciones has ganado el juego del calamar")
 				break
 			}
 		}
 	}
-	/*
-		for {
-			response, err := c.EstadoEtapas(context.Background(), &api.Check{Sign: true})
-			if err != nil {
-				log.Fatalf("Error Call RPC: %v", err)
-			}
-			if response.Etapa == 2 {
-				fmt.Println("Jugando segunda etapa \"Tirar la cuerda\"")
-				jugada := doPlay(2, false)
-				response, err := c.Jugar(context.Background(), &api.Jugadas{Etapa: int32(2), Plays: jugada})
-				if err != nil {
-					log.Fatalf("Error Call RPC: %v", err)
-				}
-				if response.Estado[0] == 0 {
-					fmt.Println("oh no! has muerto")
-					break
-				}
-				if checkWinner(response.Estado) {
-					fmt.Println("Felicitaciones has ganado el juego del calamar")
-					break
-				}
-			}
-		}
+}
 
-		fmt.Println("Espere a las instrucciones para comenzar la tercera y ultima etapa")
+func (*server) EscribirJugada(ctx context.Context, in *apiJugador.JugadaJugador) (*apiJugador.Signal, error) {
 
-		for {
-			response, err := c.EstadoEtapas(context.Background(), &api.Check{Sign: true})
-			if err != nil {
-				log.Fatalf("Error Call RPC: %v", err)
-			}
-			if response.Etapa == 3 {
-				fmt.Println("Jugando tercera etapa \"Todo o Nada\"")
-				jugada := doPlay(3, false)
-				response, err := c.Jugar(context.Background(), &api.Jugadas{Etapa: int32(3), Plays: jugada})
-				if err != nil {
-					log.Fatalf("Error Call RPC: %v", err)
-				}
-				if response.Estado[0] == 0 {
-					fmt.Println("oh no! has muerto")
-					break
-				}
-				if checkWinner(response.Estado) {
-					fmt.Println("Felicitaciones has ganado el juego del calamar")
-					break
-				}
-			}
-		}
-	*/
+	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
+	var str_Jugada string = strconv.FormatInt(int64(in.Jugada), 10)
+	var str_Etapa string = strconv.FormatInt(int64(in.Etapa), 10)
+
+	str := []string{"jugador_", str_Idjugador, "__ronda", str_Etapa, ".txt"}
+
+	var nombre_archivo string = strings.Join(str, "")
+
+	f, err := os.OpenFile(nombre_archivo, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err2 := f.WriteString(str_Jugada + "\n")
+
+	if err2 != nil {
+		log.Fatal(err2)
+	}
+
+	return &apiJugador.Signal{Sign: true}, nil
+
+}
+
+func (*server) RetornarJugadas(ctx context.Context, in *apiJugador.JugadorYEtapa) (*apiJugador.JugadasArchivo, error) {
+
+	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
+	var str_NroEtapa string = strconv.FormatInt(int64(in.NroEtapa), 10)
+
+	var nombre_archivo string = "jugador_" + str_Idjugador + "__ronda" + str_NroEtapa + ".txt"
+
+	content, err := os.ReadFile(nombre_archivo)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var string_content string = string(content)
+
+	return &apiJugador.JugadasArchivo{JugadasJugador: string_content}, nil
 
 }

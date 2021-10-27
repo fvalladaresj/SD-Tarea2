@@ -20,6 +20,7 @@ type server struct {
 }
 
 func main() {
+	go listenRabbit()
 	// create a listener on TCP port 50054
 	lis, err := net.Listen("tcp", "0.0.0.0:50054")
 	if err != nil {
