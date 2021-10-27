@@ -233,7 +233,7 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 				log.Printf("Jugador %v ha muerto", player)
 			}
 		}
-		return &api.EstadoJugador{Estado: est_jugadores}, nil
+		return &api.EstadoJugador{Estado: est_jugadores, JugadorGano: ganadores_e1[0]}, nil
 	} else {
 		rand.Seed(time.Now().UnixNano())
 		leaderMove := rand.Int31n(int32(3)) + int32(1)
@@ -256,7 +256,7 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 				}
 			}
 		}
-		return &api.EstadoJugador{Estado: est_jugadores}, nil
+		return &api.EstadoJugador{Estado: est_jugadores, JugadorGano: ganadores_e1[0]}, nil
 	}
 }
 
