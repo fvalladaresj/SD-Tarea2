@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-var pool = 0
+var pool int32 = 0
 
 type server struct {
 	apiPozo.UnimplementedDataNodePozoServer
@@ -112,8 +112,7 @@ func listenRabbit() {
 
 	go func() {
 		for d := range msgs {
-			log.Printf("Received a message: %s", d.Body)
-			pool += 100000000
+			pool += int32(100000000)
 			EscribirMuerto(string(d.Body), pool)
 		}
 	}()
@@ -127,7 +126,7 @@ func failOnError(err error, msg string) {
 	}
 }
 
-func EscribirMuerto(deathInfo string, pool int) {
+func EscribirMuerto(deathInfo string, pool int32) {
 	strPool := strconv.FormatInt(int64(pool), 10)
 
 	toWrite := deathInfo + " " + strPool
