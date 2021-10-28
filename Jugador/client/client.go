@@ -26,7 +26,7 @@ func doPlay(etapa int, gano bool) []int32 {
 		if gano {
 			result = append(result, int32(0))
 			for i := 0; i < 15; i++ {
-				result = append(result, rand.Int31n(int32(9))+1)
+				result = append(result, rand.Int31n(int32(10))+1)
 			}
 		} else {
 			fmt.Println("Por favor ingrese un numero del 1 al 10")
@@ -41,7 +41,7 @@ func doPlay(etapa int, gano bool) []int32 {
 			}
 			result = append(result, int32(jugada))
 			for i := 0; i < 15; i++ {
-				result = append(result, rand.Int31n(int32(9))+1)
+				result = append(result, rand.Int31n(int32(10))+1)
 			}
 		}
 	} else if etapa == 2 {
@@ -57,7 +57,7 @@ func doPlay(etapa int, gano bool) []int32 {
 		}
 		result = append(result, int32(jugada))
 		for i := 0; i < 15; i++ {
-			result = append(result, rand.Int31n(int32(3))+1)
+			result = append(result, rand.Int31n(int32(4))+1)
 		}
 	} else if etapa == 3 {
 		fmt.Println("Por favor ingrese un numero del 1 al 10")
@@ -72,7 +72,7 @@ func doPlay(etapa int, gano bool) []int32 {
 		}
 		result = append(result, int32(jugada))
 		for i := 0; i < 15; i++ {
-			result = append(result, rand.Int31n(int32(9))+1)
+			result = append(result, rand.Int31n(int32(10))+1)
 		}
 	}
 	return result
@@ -233,10 +233,14 @@ func manageInput() {
 func (*server) EscribirJugada(ctx context.Context, in *apiJugador.JugadaJugador) (*apiJugador.Signal, error) {
 
 	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
-	var str_Jugada string = strconv.FormatInt(int64(in.Jugada), 10)
 	var str_Etapa string = strconv.FormatInt(int64(in.Etapa), 10)
 
-	str := []string{"jugador_", str_Idjugador, "__ronda", str_Etapa, ".txt"}
+	var str_Jugada string
+	for _, jugada := range in.Jugada {
+		str_Jugada = str_Jugada + strconv.FormatInt(int64(jugada), 10) + "\n"
+	}
+
+	str := []string{"jugador_", str_Idjugador, "__ronda_", str_Etapa, ".txt"}
 
 	var nombre_archivo string = strings.Join(str, "")
 
@@ -259,7 +263,7 @@ func (*server) RetornarJugadas(ctx context.Context, in *apiJugador.JugadorYEtapa
 	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
 	var str_NroEtapa string = strconv.FormatInt(int64(in.NroEtapa), 10)
 
-	var nombre_archivo string = "jugador_" + str_Idjugador + "__ronda" + str_NroEtapa + ".txt"
+	var nombre_archivo string = "jugador_" + str_Idjugador + "__ronda_" + str_NroEtapa + ".txt"
 
 	content, err := os.ReadFile(nombre_archivo)
 	if err != nil {

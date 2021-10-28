@@ -133,5 +133,5 @@ var NameNode_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "NameNode/apiNameNode/apiNamenode.proto",
+	Metadata: "NameNode/apiNameNode/apiNameNode.proto",
 }
