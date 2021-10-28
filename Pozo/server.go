@@ -91,8 +91,8 @@ func (*server) Monto(ctx context.Context, in *apiPozo.Signal) (*apiPozo.MontoJug
 	check(err)
 
 	separados := strings.Split(dats, " ")
-
-	s := separados[len(separados)-1]
+	si := separados[len(separados)-1]
+	s := strings.ReplaceAll(si, "\n", "")
 
 	intVar, err := strconv.Atoi(s)
 	check(err)
