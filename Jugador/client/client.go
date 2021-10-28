@@ -233,8 +233,12 @@ func manageInput() {
 func (*server) EscribirJugada(ctx context.Context, in *apiJugador.JugadaJugador) (*apiJugador.Signal, error) {
 
 	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
-	var str_Jugada string = strconv.FormatInt(int64(in.Jugada), 10)
 	var str_Etapa string = strconv.FormatInt(int64(in.Etapa), 10)
+
+	var str_Jugada string
+	for _, jugada := range in.Jugada {
+		str_Jugada = str_Jugada + strconv.FormatInt(int64(jugada), 10) + "\n"
+	}
 
 	str := []string{"jugador_", str_Idjugador, "__ronda", str_Etapa, ".txt"}
 

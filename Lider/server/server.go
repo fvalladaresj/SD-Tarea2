@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/fvalladaresj/SD-Tarea2/Lider/api"
+	"github.com/fvalladaresj/SD-Tarea2/NameNode/apiNameNode"
 	"github.com/streadway/amqp"
 	"google.golang.org/grpc"
 )
@@ -28,6 +29,7 @@ var etapa_check_4 bool = false
 var rnd_actual int32 = 0
 var pts_jugadores_e1 [16]int32 = [16]int32{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 var ganadores_e1 [16]int32 = [16]int32{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+var jugadas_acumuladas_e1 [][]int32
 
 type server struct {
 	api.UnimplementedLiderServer
@@ -68,9 +70,6 @@ func interfaz(decision string) {
 	if decision == "1" {
 		etapa_actual = etapa_actual + 1
 	} else if decision == "2" {
-
-	} else {
-
 	}
 }
 
@@ -161,6 +160,13 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 	moves := in.Plays
 	if in.Etapa == 1 {
 		players := canPlayPhase1()
+		if len(jugadas_acumuladas_e1) < 16 {
+			aux := []int{moves[player]}
+			jugadas_acumuladas_e1 = append(jugadas_acumuladas_e1, aux)
+		} else {
+			jugadas_acumuladas_e1[player] = append(jugadas_acumuladas_e1[player], moves[player])
+		}
+
 		if rnd_actual < 3 && len(players) > 0 {
 			rand.Seed(time.Now().UnixNano())
 
@@ -181,6 +187,7 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 				}
 			}
 			rnd_actual = rnd_actual + 1
+
 			return &api.EstadoJugador{Estado: est_jugadores, Ronda: rnd_actual, JugadorGano: ganadores_e1[0]}, nil
 		} else {
 			for _, player := range players {
@@ -285,8 +292,12 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 func (*server) EscribirJugada(ctx context.Context, in *api.JugadaJugador) (*api.Signal, error) {
 
 	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
-	var str_Jugada string = strconv.FormatInt(int64(in.Jugada), 10)
 	var str_Etapa string = strconv.FormatInt(int64(in.Etapa), 10)
+
+	var str_Jugada string
+	for _, jugada := range in.Jugada {
+		str_Jugada = str_Jugada + strconv.FormatInt(int64(jugada), 10) + "\n"
+	}
 
 	str := []string{"jugador_", str_Idjugador, "__ronda", str_Etapa, ".txt"}
 
@@ -416,4 +427,17 @@ func sendRabbit(player int32, round int32) {
 			Body:        []byte(body),
 		})
 	failOnError(err, "Failed to publish a message")
+}
+
+func EscribirNameNode() {
+	var conn *grpc.ClientConn
+	conn, err := grpc.Dial("localhost:50052", grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %s", err)
+	}
+	defer conn.Close()
+	c := apiNameNode.NewNameNodeClient(conn)
+	for player, moves := range jugadas_acumuladas_e1 {
+		c.EscribirJugada(context.Background(), &apiNameNode.JugadaJugador{IdJugador: int32(player), Jugada: moves, Etapa: int32(1)})
+	}
 }
