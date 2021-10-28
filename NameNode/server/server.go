@@ -47,7 +47,8 @@ func (*server) EscribirJugada(ctx context.Context, in *apiNameNode.JugadaJugador
 	var str_Etapa string = strconv.FormatInt(int64(in.Etapa), 10)
 
 	rand.Seed(time.Now().UnixNano())
-	port := rand.Int31n(2) + 1
+	port := rand.Int31n(3)
+	log.Println(port)
 
 	//Escribir en NameNode
 	fileName := "NameNode.txt"

@@ -26,7 +26,7 @@ func doPlay(etapa int, gano bool) []int32 {
 		if gano {
 			result = append(result, int32(0))
 			for i := 0; i < 15; i++ {
-				result = append(result, rand.Int31n(int32(9))+1)
+				result = append(result, rand.Int31n(int32(10))+1)
 			}
 		} else {
 			fmt.Println("Por favor ingrese un numero del 1 al 10")
@@ -41,7 +41,7 @@ func doPlay(etapa int, gano bool) []int32 {
 			}
 			result = append(result, int32(jugada))
 			for i := 0; i < 15; i++ {
-				result = append(result, rand.Int31n(int32(9))+1)
+				result = append(result, rand.Int31n(int32(10))+1)
 			}
 		}
 	} else if etapa == 2 {
@@ -57,7 +57,7 @@ func doPlay(etapa int, gano bool) []int32 {
 		}
 		result = append(result, int32(jugada))
 		for i := 0; i < 15; i++ {
-			result = append(result, rand.Int31n(int32(3))+1)
+			result = append(result, rand.Int31n(int32(4))+1)
 		}
 	} else if etapa == 3 {
 		fmt.Println("Por favor ingrese un numero del 1 al 10")
@@ -72,7 +72,7 @@ func doPlay(etapa int, gano bool) []int32 {
 		}
 		result = append(result, int32(jugada))
 		for i := 0; i < 15; i++ {
-			result = append(result, rand.Int31n(int32(9))+1)
+			result = append(result, rand.Int31n(int32(10))+1)
 		}
 	}
 	return result
