@@ -9,7 +9,10 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/fvalladaresj/SD-Tarea2/Jugador/apiJugador"
+	"github.com/fvalladaresj/SD-Tarea2/Lider/api"
 	"github.com/fvalladaresj/SD-Tarea2/NameNode/apiNameNode"
+	"github.com/fvalladaresj/SD-Tarea2/Pozo/apiPozo"
 
 	"google.golang.org/grpc"
 )
@@ -74,17 +77,17 @@ func (*server) EscribirJugada(ctx context.Context, in *apiNameNode.JugadaJugador
 	// 						   lider		   jugador		     pozo
 	//var ports = [3]string{"0.0.0.0:50051", "0.0.0.0:50053", "0.0.0.0:50054"}
 	// 						   api		     apiJugador		     apiPozo
-	/*
-		if port == 0 {
-			c := api.NewLiderClient(conn)
-			c.EscribirJugada()
-		} else if port == 1 {
-			c := apiJugador.NewDataNodeJugadorClient(conn)
 
-		} else if port == 2 {
-			c := apiPozo.NewDataNodePozoClient(conn)
-		}
-	*/
+	if port == 0 {
+		c := api.NewLiderClient(conn)
+		c.EscribirJugada(context.Background(), &api.JugadaJugador{IdJugador: in.IdJugador, Jugada: in.Jugada, Etapa: in.Etapa})
+	} else if port == 1 {
+		c := apiJugador.NewDataNodeJugadorClient(conn)
+		c.EscribirJugada(context.Background(), &apiJugador.JugadaJugador{IdJugador: in.IdJugador, Jugada: in.Jugada, Etapa: in.Etapa})
+	} else if port == 2 {
+		c := apiPozo.NewDataNodePozoClient(conn)
+		c.EscribirJugada(context.Background(), &apiPozo.JugadaJugador{IdJugador: in.IdJugador, Jugada: in.Jugada, Etapa: in.Etapa})
+	}
 
 	return &apiNameNode.Signal{Sign: true}, nil
 }
