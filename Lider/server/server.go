@@ -70,6 +70,10 @@ func interfaz(decision string) {
 	if decision == "1" {
 		etapa_actual = etapa_actual + 1
 	} else if decision == "2" {
+		id := 0
+		fmt.Println("Ingrese id del jugador: ")
+		fmt.Scanln(&id)
+		fmt.Println(BuscarJugadas(int32(id)))
 	}
 }
 
@@ -94,7 +98,6 @@ func manageInput() {
 				fmt.Println("Ya hay 16 Jugadores, ahora puede dar inicio a la primera etapa")
 				fmt.Println("Indique el numero de la una de las siguientes acciones a realizar:")
 				fmt.Println("1. Iniciar primera etapa")
-				fmt.Println("2. Consultar Jugadas de un jugador")
 				fmt.Scanln(&input)
 				interfaz(input)
 			} else if etapa_actual == 1 && etapa_check_2 {
@@ -459,4 +462,19 @@ func EscribirNameNodeEtapa2y3(etapa int32, jugadores []int32, jugadas []int32) {
 		aux := []int32{jugadas[player]}
 		c.EscribirJugada(context.Background(), &apiNameNode.JugadaJugador{IdJugador: int32(player), Jugada: aux, Etapa: etapa})
 	}
+}
+
+func BuscarJugadas(id int32) string {
+	var conn *grpc.ClientConn
+	conn, err := grpc.Dial("localhost:50052", grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %s", err)
+	}
+	defer conn.Close()
+	c := apiNameNode.NewNameNodeClient(conn)
+	response, err := c.PedirJugadasJugador(context.Background(), &apiNameNode.Jugador{IdJugador: int32(id)})
+	if err != nil {
+		log.Fatal(err)
+	}
+	return response.JugadasJugador
 }
