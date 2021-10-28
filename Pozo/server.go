@@ -46,7 +46,7 @@ func (*server) EscribirJugada(ctx context.Context, in *apiPozo.JugadaJugador) (*
 		str_Jugada = str_Jugada + strconv.FormatInt(int64(jugada), 10) + "\n"
 	}
 
-	str := []string{"jugador_", str_Idjugador, "__ronda", str_Etapa, ".txt"}
+	str := []string{"jugador_", str_Idjugador, "__ronda_", str_Etapa, ".txt"}
 
 	var nombre_archivo string = strings.Join(str, "")
 
@@ -69,7 +69,7 @@ func (*server) RetornarJugadas(ctx context.Context, in *apiPozo.JugadorYEtapa) (
 	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
 	var str_NroEtapa string = strconv.FormatInt(int64(in.NroEtapa), 10)
 
-	var nombre_archivo string = "jugador_" + str_Idjugador + "__ronda" + str_NroEtapa + ".txt"
+	var nombre_archivo string = "jugador_" + str_Idjugador + "__ronda_" + str_NroEtapa + ".txt"
 
 	content, err := os.ReadFile(nombre_archivo)
 	if err != nil {

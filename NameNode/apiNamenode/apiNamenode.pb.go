@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.26.0
 // 	protoc        v3.19.0
-// source: NameNode/apiNameNode/apiNamenode.proto
+// source: NameNode/apiNameNode/apiNameNode.proto
 
 package apiNameNode
 
@@ -33,7 +33,7 @@ type JugadaJugador struct {
 func (x *JugadaJugador) Reset() {
 	*x = JugadaJugador{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_NameNode_apiNameNode_apiNamenode_proto_msgTypes[0]
+		mi := &file_NameNode_apiNameNode_apiNameNode_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -46,7 +46,7 @@ func (x *JugadaJugador) String() string {
 func (*JugadaJugador) ProtoMessage() {}
 
 func (x *JugadaJugador) ProtoReflect() protoreflect.Message {
-	mi := &file_NameNode_apiNameNode_apiNamenode_proto_msgTypes[0]
+	mi := &file_NameNode_apiNameNode_apiNameNode_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -59,7 +59,7 @@ func (x *JugadaJugador) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JugadaJugador.ProtoReflect.Descriptor instead.
 func (*JugadaJugador) Descriptor() ([]byte, []int) {
-	return file_NameNode_apiNameNode_apiNamenode_proto_rawDescGZIP(), []int{0}
+	return file_NameNode_apiNameNode_apiNameNode_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *JugadaJugador) GetIdJugador() int32 {
@@ -94,7 +94,7 @@ type Signal struct {
 func (x *Signal) Reset() {
 	*x = Signal{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_NameNode_apiNameNode_apiNamenode_proto_msgTypes[1]
+		mi := &file_NameNode_apiNameNode_apiNameNode_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -107,7 +107,7 @@ func (x *Signal) String() string {
 func (*Signal) ProtoMessage() {}
 
 func (x *Signal) ProtoReflect() protoreflect.Message {
-	mi := &file_NameNode_apiNameNode_apiNamenode_proto_msgTypes[1]
+	mi := &file_NameNode_apiNameNode_apiNameNode_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -120,7 +120,7 @@ func (x *Signal) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Signal.ProtoReflect.Descriptor instead.
 func (*Signal) Descriptor() ([]byte, []int) {
-	return file_NameNode_apiNameNode_apiNamenode_proto_rawDescGZIP(), []int{1}
+	return file_NameNode_apiNameNode_apiNameNode_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Signal) GetSign() bool {
@@ -141,7 +141,7 @@ type Jugador struct {
 func (x *Jugador) Reset() {
 	*x = Jugador{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_NameNode_apiNameNode_apiNamenode_proto_msgTypes[2]
+		mi := &file_NameNode_apiNameNode_apiNameNode_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -154,7 +154,7 @@ func (x *Jugador) String() string {
 func (*Jugador) ProtoMessage() {}
 
 func (x *Jugador) ProtoReflect() protoreflect.Message {
-	mi := &file_NameNode_apiNameNode_apiNamenode_proto_msgTypes[2]
+	mi := &file_NameNode_apiNameNode_apiNameNode_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -167,7 +167,7 @@ func (x *Jugador) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Jugador.ProtoReflect.Descriptor instead.
 func (*Jugador) Descriptor() ([]byte, []int) {
-	return file_NameNode_apiNameNode_apiNamenode_proto_rawDescGZIP(), []int{2}
+	return file_NameNode_apiNameNode_apiNameNode_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Jugador) GetIdJugador() int32 {
@@ -188,7 +188,7 @@ type TodasLasJugadas struct {
 func (x *TodasLasJugadas) Reset() {
 	*x = TodasLasJugadas{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_NameNode_apiNameNode_apiNamenode_proto_msgTypes[3]
+		mi := &file_NameNode_apiNameNode_apiNameNode_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -201,7 +201,7 @@ func (x *TodasLasJugadas) String() string {
 func (*TodasLasJugadas) ProtoMessage() {}
 
 func (x *TodasLasJugadas) ProtoReflect() protoreflect.Message {
-	mi := &file_NameNode_apiNameNode_apiNamenode_proto_msgTypes[3]
+	mi := &file_NameNode_apiNameNode_apiNameNode_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -214,7 +214,7 @@ func (x *TodasLasJugadas) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TodasLasJugadas.ProtoReflect.Descriptor instead.
 func (*TodasLasJugadas) Descriptor() ([]byte, []int) {
-	return file_NameNode_apiNameNode_apiNamenode_proto_rawDescGZIP(), []int{3}
+	return file_NameNode_apiNameNode_apiNameNode_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *TodasLasJugadas) GetJugadasJugador() string {
@@ -224,11 +224,11 @@ func (x *TodasLasJugadas) GetJugadasJugador() string {
 	return ""
 }
 
-var File_NameNode_apiNameNode_apiNamenode_proto protoreflect.FileDescriptor
+var File_NameNode_apiNameNode_apiNameNode_proto protoreflect.FileDescriptor
 
-var file_NameNode_apiNameNode_apiNamenode_proto_rawDesc = []byte{
+var file_NameNode_apiNameNode_apiNameNode_proto_rawDesc = []byte{
 	0x0a, 0x26, 0x4e, 0x61, 0x6d, 0x65, 0x4e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x4e, 0x61,
-	0x6d, 0x65, 0x4e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x4e, 0x61, 0x6d, 0x65, 0x6e, 0x6f,
+	0x6d, 0x65, 0x4e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x4e, 0x61, 0x6d, 0x65, 0x4e, 0x6f,
 	0x64, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0b, 0x61, 0x70, 0x69, 0x4e, 0x61, 0x6d,
 	0x65, 0x4e, 0x6f, 0x64, 0x65, 0x22, 0x5b, 0x0a, 0x0d, 0x4a, 0x75, 0x67, 0x61, 0x64, 0x61, 0x4a,
 	0x75, 0x67, 0x61, 0x64, 0x6f, 0x72, 0x12, 0x1c, 0x0a, 0x09, 0x49, 0x64, 0x4a, 0x75, 0x67, 0x61,
@@ -259,25 +259,25 @@ var file_NameNode_apiNameNode_apiNamenode_proto_rawDesc = []byte{
 }
 
 var (
-	file_NameNode_apiNameNode_apiNamenode_proto_rawDescOnce sync.Once
-	file_NameNode_apiNameNode_apiNamenode_proto_rawDescData = file_NameNode_apiNameNode_apiNamenode_proto_rawDesc
+	file_NameNode_apiNameNode_apiNameNode_proto_rawDescOnce sync.Once
+	file_NameNode_apiNameNode_apiNameNode_proto_rawDescData = file_NameNode_apiNameNode_apiNameNode_proto_rawDesc
 )
 
-func file_NameNode_apiNameNode_apiNamenode_proto_rawDescGZIP() []byte {
-	file_NameNode_apiNameNode_apiNamenode_proto_rawDescOnce.Do(func() {
-		file_NameNode_apiNameNode_apiNamenode_proto_rawDescData = protoimpl.X.CompressGZIP(file_NameNode_apiNameNode_apiNamenode_proto_rawDescData)
+func file_NameNode_apiNameNode_apiNameNode_proto_rawDescGZIP() []byte {
+	file_NameNode_apiNameNode_apiNameNode_proto_rawDescOnce.Do(func() {
+		file_NameNode_apiNameNode_apiNameNode_proto_rawDescData = protoimpl.X.CompressGZIP(file_NameNode_apiNameNode_apiNameNode_proto_rawDescData)
 	})
-	return file_NameNode_apiNameNode_apiNamenode_proto_rawDescData
+	return file_NameNode_apiNameNode_apiNameNode_proto_rawDescData
 }
 
-var file_NameNode_apiNameNode_apiNamenode_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
-var file_NameNode_apiNameNode_apiNamenode_proto_goTypes = []interface{}{
+var file_NameNode_apiNameNode_apiNameNode_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_NameNode_apiNameNode_apiNameNode_proto_goTypes = []interface{}{
 	(*JugadaJugador)(nil),   // 0: apiNameNode.JugadaJugador
 	(*Signal)(nil),          // 1: apiNameNode.Signal
 	(*Jugador)(nil),         // 2: apiNameNode.Jugador
 	(*TodasLasJugadas)(nil), // 3: apiNameNode.TodasLasJugadas
 }
-var file_NameNode_apiNameNode_apiNamenode_proto_depIdxs = []int32{
+var file_NameNode_apiNameNode_apiNameNode_proto_depIdxs = []int32{
 	0, // 0: apiNameNode.NameNode.EscribirJugada:input_type -> apiNameNode.JugadaJugador
 	2, // 1: apiNameNode.NameNode.PedirJugadasJugador:input_type -> apiNameNode.Jugador
 	1, // 2: apiNameNode.NameNode.EscribirJugada:output_type -> apiNameNode.Signal
@@ -289,13 +289,13 @@ var file_NameNode_apiNameNode_apiNamenode_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_NameNode_apiNameNode_apiNamenode_proto_init() }
-func file_NameNode_apiNameNode_apiNamenode_proto_init() {
-	if File_NameNode_apiNameNode_apiNamenode_proto != nil {
+func init() { file_NameNode_apiNameNode_apiNameNode_proto_init() }
+func file_NameNode_apiNameNode_apiNameNode_proto_init() {
+	if File_NameNode_apiNameNode_apiNameNode_proto != nil {
 		return
 	}
 	if !protoimpl.UnsafeEnabled {
-		file_NameNode_apiNameNode_apiNamenode_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+		file_NameNode_apiNameNode_apiNameNode_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*JugadaJugador); i {
 			case 0:
 				return &v.state
@@ -307,7 +307,7 @@ func file_NameNode_apiNameNode_apiNamenode_proto_init() {
 				return nil
 			}
 		}
-		file_NameNode_apiNameNode_apiNamenode_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+		file_NameNode_apiNameNode_apiNameNode_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Signal); i {
 			case 0:
 				return &v.state
@@ -319,7 +319,7 @@ func file_NameNode_apiNameNode_apiNamenode_proto_init() {
 				return nil
 			}
 		}
-		file_NameNode_apiNameNode_apiNamenode_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+		file_NameNode_apiNameNode_apiNameNode_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Jugador); i {
 			case 0:
 				return &v.state
@@ -331,7 +331,7 @@ func file_NameNode_apiNameNode_apiNamenode_proto_init() {
 				return nil
 			}
 		}
-		file_NameNode_apiNameNode_apiNamenode_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+		file_NameNode_apiNameNode_apiNameNode_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*TodasLasJugadas); i {
 			case 0:
 				return &v.state
@@ -348,18 +348,18 @@ func file_NameNode_apiNameNode_apiNamenode_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: file_NameNode_apiNameNode_apiNamenode_proto_rawDesc,
+			RawDescriptor: file_NameNode_apiNameNode_apiNameNode_proto_rawDesc,
 			NumEnums:      0,
 			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_NameNode_apiNameNode_apiNamenode_proto_goTypes,
-		DependencyIndexes: file_NameNode_apiNameNode_apiNamenode_proto_depIdxs,
-		MessageInfos:      file_NameNode_apiNameNode_apiNamenode_proto_msgTypes,
+		GoTypes:           file_NameNode_apiNameNode_apiNameNode_proto_goTypes,
+		DependencyIndexes: file_NameNode_apiNameNode_apiNameNode_proto_depIdxs,
+		MessageInfos:      file_NameNode_apiNameNode_apiNameNode_proto_msgTypes,
 	}.Build()
-	File_NameNode_apiNameNode_apiNamenode_proto = out.File
-	file_NameNode_apiNameNode_apiNamenode_proto_rawDesc = nil
-	file_NameNode_apiNameNode_apiNamenode_proto_goTypes = nil
-	file_NameNode_apiNameNode_apiNamenode_proto_depIdxs = nil
+	File_NameNode_apiNameNode_apiNameNode_proto = out.File
+	file_NameNode_apiNameNode_apiNameNode_proto_rawDesc = nil
+	file_NameNode_apiNameNode_apiNameNode_proto_goTypes = nil
+	file_NameNode_apiNameNode_apiNameNode_proto_depIdxs = nil
 }
