@@ -13,6 +13,12 @@ import (
 	"google.golang.org/grpc"
 )
 
+func check(e error) {
+	if e != nil {
+		panic(e)
+	}
+}
+
 var pool = 0
 
 type server struct {
@@ -75,6 +81,23 @@ func (*server) RetornarJugadas(ctx context.Context, in *apiPozo.JugadorYEtapa) (
 	var string_content string = string(content)
 
 	return &apiPozo.JugadasArchivo{JugadasJugador: string_content}, nil
+
+}
+
+func (*server) Monto(ctx context.Context, in *apiPozo.Signal) (*apiPozo.MontoJugador, error) {
+
+	dat, err := os.ReadFile("Pool.txt")
+	dats := string(dat)
+	check(err)
+
+	separados := strings.Split(dats, " ")
+
+	s := separados[len(separados)-1]
+
+	intVar, err := strconv.Atoi(s)
+	check(err)
+
+	return &apiPozo.MontoJugador{Monto: int32(intVar)}, nil
 
 }
 

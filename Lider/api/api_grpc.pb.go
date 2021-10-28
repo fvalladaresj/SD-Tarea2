@@ -20,7 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type LiderClient interface {
 	ParticiparJuego(ctx context.Context, in *PeticionParticipar, opts ...grpc.CallOption) (*ConfirmacionParticipacion, error)
 	Jugar(ctx context.Context, in *Jugadas, opts ...grpc.CallOption) (*EstadoJugador, error)
-	Monto(ctx context.Context, in *PedirMonto, opts ...grpc.CallOption) (*MontoJugador, error)
+	Monto(ctx context.Context, in *Signal, opts ...grpc.CallOption) (*MontoJugador, error)
 	EstadoEtapas(ctx context.Context, in *Check, opts ...grpc.CallOption) (*State, error)
 	CuantosJugadores(ctx context.Context, in *Signal, opts ...grpc.CallOption) (*CantidadJugadores, error)
 	EscribirJugada(ctx context.Context, in *JugadaJugador, opts ...grpc.CallOption) (*Signal, error)
@@ -53,7 +53,7 @@ func (c *liderClient) Jugar(ctx context.Context, in *Jugadas, opts ...grpc.CallO
 	return out, nil
 }
 
-func (c *liderClient) Monto(ctx context.Context, in *PedirMonto, opts ...grpc.CallOption) (*MontoJugador, error) {
+func (c *liderClient) Monto(ctx context.Context, in *Signal, opts ...grpc.CallOption) (*MontoJugador, error) {
 	out := new(MontoJugador)
 	err := c.cc.Invoke(ctx, "/api.Lider/Monto", in, out, opts...)
 	if err != nil {
@@ -104,7 +104,7 @@ func (c *liderClient) RetornarJugadas(ctx context.Context, in *JugadorYEtapa, op
 type LiderServer interface {
 	ParticiparJuego(context.Context, *PeticionParticipar) (*ConfirmacionParticipacion, error)
 	Jugar(context.Context, *Jugadas) (*EstadoJugador, error)
-	Monto(context.Context, *PedirMonto) (*MontoJugador, error)
+	Monto(context.Context, *Signal) (*MontoJugador, error)
 	EstadoEtapas(context.Context, *Check) (*State, error)
 	CuantosJugadores(context.Context, *Signal) (*CantidadJugadores, error)
 	EscribirJugada(context.Context, *JugadaJugador) (*Signal, error)
@@ -122,7 +122,7 @@ func (UnimplementedLiderServer) ParticiparJuego(context.Context, *PeticionPartic
 func (UnimplementedLiderServer) Jugar(context.Context, *Jugadas) (*EstadoJugador, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Jugar not implemented")
 }
-func (UnimplementedLiderServer) Monto(context.Context, *PedirMonto) (*MontoJugador, error) {
+func (UnimplementedLiderServer) Monto(context.Context, *Signal) (*MontoJugador, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Monto not implemented")
 }
 func (UnimplementedLiderServer) EstadoEtapas(context.Context, *Check) (*State, error) {
@@ -187,7 +187,7 @@ func _Lider_Jugar_Handler(srv interface{}, ctx context.Context, dec func(interfa
 }
 
 func _Lider_Monto_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PedirMonto)
+	in := new(Signal)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -199,7 +199,7 @@ func _Lider_Monto_Handler(srv interface{}, ctx context.Context, dec func(interfa
 		FullMethod: "/api.Lider/Monto",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LiderServer).Monto(ctx, req.(*PedirMonto))
+		return srv.(LiderServer).Monto(ctx, req.(*Signal))
 	}
 	return interceptor(ctx, in, info, handler)
 }
