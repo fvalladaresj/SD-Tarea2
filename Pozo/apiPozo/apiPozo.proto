@@ -12,7 +12,7 @@ service DataNodePozo{
 
 message JugadaJugador {
     int32 IdJugador = 1;
-    int32 Jugada = 2;
+    repeated int32 Jugada = 2;
     int32 Etapa = 3;
 }
 

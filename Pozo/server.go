@@ -19,7 +19,7 @@ func check(e error) {
 	}
 }
 
-var pool = 0
+var pool int32 = 0
 
 type server struct {
 	apiPozo.UnimplementedDataNodePozoServer
@@ -45,10 +45,14 @@ func main() {
 func (*server) EscribirJugada(ctx context.Context, in *apiPozo.JugadaJugador) (*apiPozo.Signal, error) {
 
 	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
-	var str_Jugada string = strconv.FormatInt(int64(in.Jugada), 10)
 	var str_Etapa string = strconv.FormatInt(int64(in.Etapa), 10)
 
-	str := []string{"jugador_", str_Idjugador, "__ronda", str_Etapa, ".txt"}
+	var str_Jugada string
+	for _, jugada := range in.Jugada {
+		str_Jugada = str_Jugada + strconv.FormatInt(int64(jugada), 10) + "\n"
+	}
+
+	str := []string{"jugador_", str_Idjugador, "__ronda_", str_Etapa, ".txt"}
 
 	var nombre_archivo string = strings.Join(str, "")
 
@@ -71,7 +75,7 @@ func (*server) RetornarJugadas(ctx context.Context, in *apiPozo.JugadorYEtapa) (
 	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
 	var str_NroEtapa string = strconv.FormatInt(int64(in.NroEtapa), 10)
 
-	var nombre_archivo string = "jugador_" + str_Idjugador + "__ronda" + str_NroEtapa + ".txt"
+	var nombre_archivo string = "jugador_" + str_Idjugador + "__ronda_" + str_NroEtapa + ".txt"
 
 	content, err := os.ReadFile(nombre_archivo)
 	if err != nil {
@@ -135,8 +139,7 @@ func listenRabbit() {
 
 	go func() {
 		for d := range msgs {
-			log.Printf("Received a message: %s", d.Body)
-			pool += 100000000
+			pool += int32(100000000)
 			EscribirMuerto(string(d.Body), pool)
 		}
 	}()
@@ -150,7 +153,7 @@ func failOnError(err error, msg string) {
 	}
 }
 
-func EscribirMuerto(deathInfo string, pool int) {
+func EscribirMuerto(deathInfo string, pool int32) {
 	strPool := strconv.FormatInt(int64(pool), 10)
 
 	toWrite := deathInfo + " " + strPool

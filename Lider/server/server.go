@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/fvalladaresj/SD-Tarea2/Lider/api"
+	"github.com/fvalladaresj/SD-Tarea2/NameNode/apiNameNode"
 	"github.com/fvalladaresj/SD-Tarea2/Pozo/apiPozo"
 	"github.com/streadway/amqp"
 	"google.golang.org/grpc"
@@ -29,6 +30,7 @@ var etapa_check_4 bool = false
 var rnd_actual int32 = 0
 var pts_jugadores_e1 [16]int32 = [16]int32{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 var ganadores_e1 [16]int32 = [16]int32{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+var jugadas_acumuladas_e1 [][]int32
 
 type server struct {
 	api.UnimplementedLiderServer
@@ -69,7 +71,10 @@ func interfaz(decision string) {
 	if decision == "1" {
 		etapa_actual = etapa_actual + 1
 	} else if decision == "2" {
-
+		id := 0
+		fmt.Println("Ingrese id del jugador: ")
+		fmt.Scanln(&id)
+		fmt.Println(BuscarJugadas(int32(id)))
 	}
 }
 
@@ -94,7 +99,6 @@ func manageInput() {
 				fmt.Println("Ya hay 16 Jugadores, ahora puede dar inicio a la primera etapa")
 				fmt.Println("Indique el numero de la una de las siguientes acciones a realizar:")
 				fmt.Println("1. Iniciar primera etapa")
-				fmt.Println("2. Consultar Jugadas de un jugador")
 				fmt.Scanln(&input)
 				interfaz(input)
 			} else if etapa_actual == 1 && etapa_check_2 {
@@ -160,6 +164,15 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 	moves := in.Plays
 	if in.Etapa == 1 {
 		players := canPlayPhase1()
+		for _, player := range players {
+			if len(jugadas_acumuladas_e1) < 16 {
+				aux := []int32{moves[player]}
+				jugadas_acumuladas_e1 = append(jugadas_acumuladas_e1, aux)
+			} else {
+				jugadas_acumuladas_e1[player] = append(jugadas_acumuladas_e1[player], moves[player])
+			}
+		}
+
 		if rnd_actual < 3 && len(players) > 0 {
 			rand.Seed(time.Now().UnixNano())
 
@@ -180,6 +193,7 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 				}
 			}
 			rnd_actual = rnd_actual + 1
+
 			return &api.EstadoJugador{Estado: est_jugadores, Ronda: rnd_actual, JugadorGano: ganadores_e1[0]}, nil
 		} else {
 			for _, player := range players {
@@ -201,14 +215,15 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 			}
 			etapa_check_2 = true
 			fmt.Println()
+			EscribirNameNodeEtapa1()
 			return &api.EstadoJugador{Estado: est_jugadores, Ronda: 4, JugadorGano: ganadores_e1[0]}, nil
 		}
 	} else if in.Etapa == 2 {
 		rand.Seed(time.Now().UnixNano())
-		leaderMove := rand.Int31n(int32(3)) + int32(1)
+		leaderMove := rand.Int31n(int32(4)) + int32(1)
 		players := canPlayPhase2()
 		if len(players)%2 == 1 { //es impar
-			indexToDelete := rand.Int31n(int32(len(players) - 1))
+			indexToDelete := rand.Int31n(int32(len(players)))
 			est_jugadores[indexToDelete] = 0 //muerto
 			log.Printf("Jugador %v ha muerto, eliminado al azar", players[indexToDelete])
 			players = append(players[:indexToDelete], players[indexToDelete+1:]...)
@@ -217,7 +232,7 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 		teamB := players[len(players)/2:]
 
 		if sum(teamA)%2 == sum(teamB)%2 && sum(teamA)%2 != leaderMove%2 {
-			if rand.Int31n(int32(1)) == 0 {
+			if rand.Int31n(int32(2)) == 0 {
 				for _, player := range teamA {
 					est_jugadores[player] = 0
 					log.Printf("Jugador %v ha muerto, team perderdor con %v y lider %v", player, sum(teamA), leaderMove)
@@ -247,13 +262,14 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 		}
 		etapa_check_3 = true
 		fmt.Println()
+		EscribirNameNodeEtapa2y3(int32(2), players, moves)
 		return &api.EstadoJugador{Estado: est_jugadores, JugadorGano: ganadores_e1[0]}, nil
 	} else {
 		rand.Seed(time.Now().UnixNano())
-		leaderMove := rand.Int31n(int32(3)) + int32(1)
+		leaderMove := rand.Int31n(int32(4)) + int32(1)
 		players := canPlayPhase2()
 		if len(canPlayPhase2())%2 == 1 { //es impar
-			indexToDelete := rand.Int31n(int32(len(players) - 1))
+			indexToDelete := rand.Int31n(int32(len(players)))
 			est_jugadores[indexToDelete] = 0 //muerto
 			log.Printf("Jugador %v ha muerto", players[indexToDelete])
 			players = append(players[:indexToDelete], players[indexToDelete+1:]...)
@@ -277,6 +293,7 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 			}
 		}
 		etapa_check_4 = true
+		EscribirNameNodeEtapa2y3(int32(3), players, moves)
 		return &api.EstadoJugador{Estado: est_jugadores, JugadorGano: ganadores_e1[0]}, nil
 	}
 }
@@ -284,10 +301,14 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 func (*server) EscribirJugada(ctx context.Context, in *api.JugadaJugador) (*api.Signal, error) {
 
 	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
-	var str_Jugada string = strconv.FormatInt(int64(in.Jugada), 10)
 	var str_Etapa string = strconv.FormatInt(int64(in.Etapa), 10)
 
-	str := []string{"jugador_", str_Idjugador, "__ronda", str_Etapa, ".txt"}
+	var str_Jugada string
+	for _, jugada := range in.Jugada {
+		str_Jugada = str_Jugada + strconv.FormatInt(int64(jugada), 10) + "\n"
+	}
+
+	str := []string{"jugador_", str_Idjugador, "__ronda_", str_Etapa, ".txt"}
 
 	var nombre_archivo string = strings.Join(str, "")
 
@@ -310,7 +331,7 @@ func (*server) RetornarJugadas(ctx context.Context, in *api.JugadorYEtapa) (*api
 	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
 	var str_NroEtapa string = strconv.FormatInt(int64(in.NroEtapa), 10)
 
-	var nombre_archivo string = "jugador_" + str_Idjugador + "__ronda" + str_NroEtapa + ".txt"
+	var nombre_archivo string = "jugador_" + str_Idjugador + "__ronda_" + str_NroEtapa + ".txt"
 
 	content, err := os.ReadFile(nombre_archivo)
 	if err != nil {
@@ -427,4 +448,46 @@ func sendRabbit(player int32, round int32) {
 			Body:        []byte(body),
 		})
 	failOnError(err, "Failed to publish a message")
+}
+
+func EscribirNameNodeEtapa1() {
+	var conn *grpc.ClientConn
+	conn, err := grpc.Dial("localhost:50052", grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %s", err)
+	}
+	defer conn.Close()
+	c := apiNameNode.NewNameNodeClient(conn)
+	for player, moves := range jugadas_acumuladas_e1 {
+		c.EscribirJugada(context.Background(), &apiNameNode.JugadaJugador{IdJugador: int32(player), Jugada: moves, Etapa: int32(1)})
+	}
+}
+
+func EscribirNameNodeEtapa2y3(etapa int32, jugadores []int32, jugadas []int32) {
+	var conn *grpc.ClientConn
+	conn, err := grpc.Dial("localhost:50052", grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %s", err)
+	}
+	defer conn.Close()
+	c := apiNameNode.NewNameNodeClient(conn)
+	for _, player := range jugadores {
+		aux := []int32{jugadas[player]}
+		c.EscribirJugada(context.Background(), &apiNameNode.JugadaJugador{IdJugador: int32(player), Jugada: aux, Etapa: etapa})
+	}
+}
+
+func BuscarJugadas(id int32) string {
+	var conn *grpc.ClientConn
+	conn, err := grpc.Dial("localhost:50052", grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %s", err)
+	}
+	defer conn.Close()
+	c := apiNameNode.NewNameNodeClient(conn)
+	response, err := c.PedirJugadasJugador(context.Background(), &apiNameNode.Jugador{IdJugador: int32(id)})
+	if err != nil {
+		log.Fatal(err)
+	}
+	return response.JugadasJugador
 }
