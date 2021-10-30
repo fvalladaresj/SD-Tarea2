@@ -7,6 +7,7 @@ option go_package = "/apiPozo";
 service DataNodePozo{
     rpc EscribirJugada (JugadaJugador) returns (Signal) {}
     rpc RetornarJugadas (JugadorYEtapa) returns (JugadasArchivo) {}
+    rpc Monto (Signal) returns (MontoJugador) {}
 }
 
 message JugadaJugador {
@@ -27,4 +28,8 @@ message JugadorYEtapa{
 
 message JugadasArchivo {
     string  JugadasJugador = 1;
+}
+
+message MontoJugador {
+    int32 Monto = 1;
 }

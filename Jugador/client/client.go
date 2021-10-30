@@ -16,6 +16,36 @@ import (
 	"google.golang.org/grpc"
 )
 
+func interfaz() {
+
+	var dec string
+
+	var conn *grpc.ClientConn
+	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %s", err)
+	}
+	defer conn.Close()
+	c := api.NewLiderClient(conn)
+
+	for {
+		fmt.Println("Elija entre las siguientes opciones su siguiente accion a realizar")
+		fmt.Println("1. Continuar a la siguiente etapa")
+		fmt.Println("2. Revisar el Monto acumulado en el pozo")
+		fmt.Scanln(&dec)
+		if dec == "1" {
+			break
+		} else if dec == "2" {
+			fmt.Println("El monto acumulado es:")
+			response, err := c.Monto(context.Background(), &api.Signal{Sign: true})
+			if err != nil {
+				log.Fatalf("No se llama: %s", err)
+			}
+			fmt.Println(response.Monto)
+		}
+	}
+}
+
 func doPlay(etapa int, gano bool) []int32 {
 	var result []int32
 	var jugada int32
@@ -166,9 +196,8 @@ func manageInput() {
 				break
 			}
 			if response.JugadorGano == 1 {
-				fmt.Println("Felicitaciones por ganar la primera etapa, ingrese continuar para pasar a la siguiente etapa")
-				var input string
-				fmt.Scanln(&input)
+				fmt.Println("Felicitaciones por ganar la primera etapa")
+				interfaz()
 				if response.Ronda < 4 {
 					jugada := doPlay(1, true)
 					_, err := c.Jugar(context.Background(), &api.Jugadas{Etapa: int32(1), Plays: jugada})
@@ -194,9 +223,8 @@ func manageInput() {
 				break
 			}
 			if response.JugadorGano == 1 {
-				fmt.Println("Felicitaciones por ganar la segunda etapa, ingrese continuar para pasar a la siguiente etapa")
-				var input string
-				fmt.Scanln(&input)
+				fmt.Println("Felicitaciones por ganar la segunda etapa")
+				interfaz()
 				etapa_jugada2 = true
 				fmt.Println("Espere a las instrucciones para comenzar la tercera etapa")
 				continue

@@ -13,6 +13,7 @@ import (
 
 	"github.com/fvalladaresj/SD-Tarea2/Lider/api"
 	"github.com/fvalladaresj/SD-Tarea2/NameNode/apiNameNode"
+	"github.com/fvalladaresj/SD-Tarea2/Pozo/apiPozo"
 	"github.com/streadway/amqp"
 	"google.golang.org/grpc"
 )
@@ -343,12 +344,24 @@ func (*server) RetornarJugadas(ctx context.Context, in *api.JugadorYEtapa) (*api
 
 }
 
-/*
-func (*server) Monto(ctx context.Context, in *api.PedirMonto) (*api.MontoJugador, error) {
+func (*server) Monto(ctx context.Context, in *api.Signal) (*api.MontoJugador, error) {
+
+	var conn *grpc.ClientConn
+	conn, err := grpc.Dial("localhost:50054", grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %s", err)
+	}
+	defer conn.Close()
+	c := apiPozo.NewDataNodePozoClient(conn)
+
+	response, err := c.Monto(context.Background(), &apiPozo.Signal{Sign: true})
+	if err != nil {
+		log.Fatalf("Error Call RPC: %v", err)
+	}
+
+	return &api.MontoJugador{Monto: response.Monto}, nil
 
 }
-
-*/
 
 ////////////////////////////////////////////////////////// Funciones varias//////////////////////////////////////////////
 

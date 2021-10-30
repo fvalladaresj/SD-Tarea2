@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type DataNodePozoClient interface {
 	EscribirJugada(ctx context.Context, in *JugadaJugador, opts ...grpc.CallOption) (*Signal, error)
 	RetornarJugadas(ctx context.Context, in *JugadorYEtapa, opts ...grpc.CallOption) (*JugadasArchivo, error)
+	Monto(ctx context.Context, in *Signal, opts ...grpc.CallOption) (*MontoJugador, error)
 }
 
 type dataNodePozoClient struct {
@@ -48,12 +49,22 @@ func (c *dataNodePozoClient) RetornarJugadas(ctx context.Context, in *JugadorYEt
 	return out, nil
 }
 
+func (c *dataNodePozoClient) Monto(ctx context.Context, in *Signal, opts ...grpc.CallOption) (*MontoJugador, error) {
+	out := new(MontoJugador)
+	err := c.cc.Invoke(ctx, "/apiPozo.DataNodePozo/Monto", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DataNodePozoServer is the server API for DataNodePozo service.
 // All implementations must embed UnimplementedDataNodePozoServer
 // for forward compatibility
 type DataNodePozoServer interface {
 	EscribirJugada(context.Context, *JugadaJugador) (*Signal, error)
 	RetornarJugadas(context.Context, *JugadorYEtapa) (*JugadasArchivo, error)
+	Monto(context.Context, *Signal) (*MontoJugador, error)
 	mustEmbedUnimplementedDataNodePozoServer()
 }
 
@@ -66,6 +77,9 @@ func (UnimplementedDataNodePozoServer) EscribirJugada(context.Context, *JugadaJu
 }
 func (UnimplementedDataNodePozoServer) RetornarJugadas(context.Context, *JugadorYEtapa) (*JugadasArchivo, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RetornarJugadas not implemented")
+}
+func (UnimplementedDataNodePozoServer) Monto(context.Context, *Signal) (*MontoJugador, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Monto not implemented")
 }
 func (UnimplementedDataNodePozoServer) mustEmbedUnimplementedDataNodePozoServer() {}
 
@@ -116,6 +130,24 @@ func _DataNodePozo_RetornarJugadas_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DataNodePozo_Monto_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Signal)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataNodePozoServer).Monto(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/apiPozo.DataNodePozo/Monto",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataNodePozoServer).Monto(ctx, req.(*Signal))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DataNodePozo_ServiceDesc is the grpc.ServiceDesc for DataNodePozo service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -130,6 +162,10 @@ var DataNodePozo_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RetornarJugadas",
 			Handler:    _DataNodePozo_RetornarJugadas_Handler,
+		},
+		{
+			MethodName: "Monto",
+			Handler:    _DataNodePozo_Monto_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
