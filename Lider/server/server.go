@@ -76,6 +76,7 @@ func interfaz(decision string) {
 		fmt.Scanln(&id)
 		fmt.Println(BuscarJugadas(int32(id)))
 	}
+
 }
 
 func manageInput() {
@@ -103,18 +104,32 @@ func manageInput() {
 				interfaz(input)
 			} else if etapa_actual == 1 && etapa_check_2 {
 				etapa_check_2 = false
-				fmt.Println("Indique el numero de la una de las siguientes acciones a realizar:")
-				fmt.Println("1. Iniciar la segunda etapa")
-				fmt.Println("2. Consultar Jugadas de un jugador")
-				fmt.Scanln(&input)
-				interfaz(input)
+				for {
+					fmt.Println("Indique el numero de la una de las siguientes acciones a realizar:")
+					fmt.Println("1. Iniciar la segunda etapa")
+					fmt.Println("2. Consultar Jugadas de un jugador")
+					fmt.Scanln(&input)
+					if input == "1" {
+						interfaz(input)
+						break
+					} else {
+						interfaz(input)
+					}
+				}
 			} else if etapa_actual == 2 && etapa_check_3 {
 				etapa_check_3 = false
-				fmt.Println("Indique el numero de la una de las siguientes acciones a realizar:")
-				fmt.Println("1. Iniciar la segunda etapa")
-				fmt.Println("2. Consultar Jugadas de un jugador")
-				fmt.Scanln(&input)
-				interfaz(input)
+				for {
+					fmt.Println("Indique el numero de la una de las siguientes acciones a realizar:")
+					fmt.Println("1. Iniciar la tercera etapa")
+					fmt.Println("2. Consultar Jugadas de un jugador")
+					fmt.Scanln(&input)
+					if input == "1" {
+						interfaz(input)
+						break
+					} else {
+						interfaz(input)
+					}
+				}
 			} else if etapa_actual == 3 && etapa_check_4 {
 				break
 			}
@@ -224,8 +239,9 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 		players := canPlayPhase2()
 		if len(players)%2 == 1 { //es impar
 			indexToDelete := rand.Int31n(int32(len(players)))
-			est_jugadores[indexToDelete] = 0 //muerto
+			est_jugadores[players[indexToDelete]] = 0 //muerto
 			log.Printf("Jugador %v ha muerto, eliminado al azar", players[indexToDelete])
+			go sendRabbit(players[indexToDelete], etapa_actual)
 			players = append(players[:indexToDelete], players[indexToDelete+1:]...)
 		}
 		teamA := players[0 : len(players)/2]
@@ -235,23 +251,25 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 			if rand.Int31n(int32(2)) == 0 {
 				for _, player := range teamA {
 					est_jugadores[player] = 0
-					log.Printf("Jugador %v ha muerto, team perderdor con %v y lider %v", player, sum(teamA), leaderMove)
 				}
 			} else {
 				for _, player := range teamB {
 					est_jugadores[player] = 0
-					log.Printf("Jugador %v ha muerto, team perderdor con %v y lider %v", player, sum(teamB), leaderMove)
+					log.Printf("Jugador %v ha muerto", player)
+					go sendRabbit(player, etapa_actual)
 				}
 			}
 		} else if sum(teamA)%2 != leaderMove%2 {
 			for _, player := range teamA {
 				est_jugadores[player] = 0
-				log.Printf("Jugador %v ha muerto, team perderdor con %v y lider %v", player, sum(teamA), leaderMove)
+				log.Printf("Jugador %v ha muerto", player)
+				go sendRabbit(player, etapa_actual)
 			}
 		} else if sum(teamB)%2 != leaderMove%2 {
 			for _, player := range teamB {
 				est_jugadores[player] = 0
-				log.Printf("Jugador %v ha muerto, team perderdor con %v y lider %v", player, sum(teamB), leaderMove)
+				log.Printf("Jugador %v ha muerto", player)
+				go sendRabbit(player, etapa_actual)
 			}
 		}
 		fmt.Print("Etapa 2 finalizada, jugadores vivos: ")
@@ -269,9 +287,10 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 		leaderMove := rand.Int31n(int32(4)) + int32(1)
 		players := canPlayPhase2()
 		if len(canPlayPhase2())%2 == 1 { //es impar
-			indexToDelete := rand.Int31n(int32(len(players)))
+			indexToDelete := rand.Int31n(int32(len(players) + 1))
 			est_jugadores[indexToDelete] = 0 //muerto
 			log.Printf("Jugador %v ha muerto", players[indexToDelete])
+			go sendRabbit(indexToDelete, etapa_actual)
 			players = append(players[:indexToDelete], players[indexToDelete+1:]...)
 		}
 		playerCouples := tuples(players)
@@ -280,9 +299,13 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 				if Abs(couple[0]-leaderMove) > Abs(couple[1]-leaderMove) {
 					est_jugadores[couple[0]] = 0
 					log.Printf("Jugador %v ha muerto", couple[0])
+					go sendRabbit(couple[0], etapa_actual)
+
 				} else {
 					est_jugadores[couple[1]] = 0
 					log.Printf("Jugador %v ha muerto", couple[1])
+					go sendRabbit(couple[1], etapa_actual)
+
 				}
 			}
 		}
