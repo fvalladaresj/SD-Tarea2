@@ -177,7 +177,7 @@ func manageInput() {
 		if err != nil {
 			log.Fatalf("Error Call RPC: %v", err)
 		}
-		if response.Etapa == 1 && etapa_jugada1 == false {
+		if response.Etapa == 1 && !etapa_jugada1 {
 			fmt.Println("Jugando primera etapa \"Luz Roja, Luz Verde\"")
 			jugada := doPlay(1, false)
 			response, err := c.Jugar(context.Background(), &api.Jugadas{Etapa: int32(1), Plays: jugada})
@@ -211,7 +211,7 @@ func manageInput() {
 			}
 		}
 
-		if response.Etapa == 2 && etapa_jugada2 == false {
+		if response.Etapa == 2 && !etapa_jugada2 {
 			fmt.Println("Jugando segunda etapa \"Tirar la cuerda\"")
 			jugada := doPlay(2, false)
 			response, err := c.Jugar(context.Background(), &api.Jugadas{Etapa: int32(2), Plays: jugada})
@@ -222,7 +222,7 @@ func manageInput() {
 				fmt.Println("oh no! has muerto")
 				break
 			}
-			if response.JugadorGano == 1 {
+			if response.Estado[0] == 1 {
 				fmt.Println("Felicitaciones por ganar la segunda etapa")
 				interfaz()
 				etapa_jugada2 = true
@@ -235,7 +235,7 @@ func manageInput() {
 			}
 		}
 
-		if response.Etapa == 3 && etapa_jugada3 == false {
+		if response.Etapa == 3 && !etapa_jugada3 {
 			fmt.Println("Jugando tercera etapa \"Todo o Nada\"")
 			jugada := doPlay(3, false)
 			response, err := c.Jugar(context.Background(), &api.Jugadas{Etapa: int32(3), Plays: jugada})
@@ -246,7 +246,7 @@ func manageInput() {
 				fmt.Println("oh no! has muerto")
 				break
 			}
-			if response.JugadorGano == 1 {
+			if response.Estado[0] == 1 {
 				fmt.Println("Felicitaciones por ganar la tercera etapa, ingrese continuar para pasar a la siguiente etapa")
 				var input string
 				fmt.Scanln(&input)
@@ -276,7 +276,7 @@ func (*server) EscribirJugada(ctx context.Context, in *apiJugador.JugadaJugador)
 	if err != nil {
 		log.Fatal(err)
 	}
-	_, err2 := f.WriteString(str_Jugada + "\n")
+	_, err2 := f.WriteString(str_Jugada)
 
 	if err2 != nil {
 		log.Fatal(err2)

@@ -123,21 +123,21 @@ func (*server) PedirJugadasJugador(ctx context.Context, in *apiNameNode.Jugador)
 				if err != nil {
 					log.Fatal(err)
 				}
-				jugadas = jugadas + "Jugadas ronda 1: " + response.JugadasJugador
+				jugadas = jugadas + "Jugadas ronda 1: \n" + response.JugadasJugador
 			} else if line[2] == ports[1] {
 				c := apiJugador.NewDataNodeJugadorClient(conn)
 				response, err := c.RetornarJugadas(context.Background(), &apiJugador.JugadorYEtapa{IdJugador: in.IdJugador, NroEtapa: int32(1)})
 				if err != nil {
 					log.Fatal(err)
 				}
-				jugadas = jugadas + "Jugadas ronda 1: " + response.JugadasJugador
+				jugadas = jugadas + "Jugadas ronda 1: \n" + response.JugadasJugador
 			} else if line[2] == ports[2] {
 				c := apiPozo.NewDataNodePozoClient(conn)
 				response, err := c.RetornarJugadas(context.Background(), &apiPozo.JugadorYEtapa{IdJugador: in.IdJugador, NroEtapa: int32(1)})
 				if err != nil {
 					log.Fatal(err)
 				}
-				jugadas = jugadas + "Jugadas ronda 1: " + response.JugadasJugador
+				jugadas = jugadas + "Jugadas ronda 1: \n" + response.JugadasJugador
 			}
 		} else if strings.Join(line[0:2], " ") == etapa2 {
 			var conn *grpc.ClientConn
@@ -152,21 +152,21 @@ func (*server) PedirJugadasJugador(ctx context.Context, in *apiNameNode.Jugador)
 				if err != nil {
 					log.Fatal(err)
 				}
-				jugadas = jugadas + "Jugadas ronda 2: " + response.JugadasJugador
+				jugadas = jugadas + "Jugadas ronda 2: \n" + response.JugadasJugador
 			} else if line[2] == ports[1] {
 				c := apiJugador.NewDataNodeJugadorClient(conn)
 				response, err := c.RetornarJugadas(context.Background(), &apiJugador.JugadorYEtapa{IdJugador: in.IdJugador, NroEtapa: int32(2)})
 				if err != nil {
 					log.Fatal(err)
 				}
-				jugadas = jugadas + "Jugadas ronda 2: " + response.JugadasJugador
+				jugadas = jugadas + "Jugadas ronda 2: \n" + response.JugadasJugador
 			} else if line[2] == ports[2] {
 				c := apiPozo.NewDataNodePozoClient(conn)
 				response, err := c.RetornarJugadas(context.Background(), &apiPozo.JugadorYEtapa{IdJugador: in.IdJugador, NroEtapa: int32(2)})
 				if err != nil {
 					log.Fatal(err)
 				}
-				jugadas = jugadas + "Jugadas ronda 2: " + response.JugadasJugador
+				jugadas = jugadas + "Jugadas ronda 2: \n" + response.JugadasJugador
 			}
 		} else if strings.Join(line[0:2], " ") == etapa3 {
 			var conn *grpc.ClientConn
@@ -181,21 +181,21 @@ func (*server) PedirJugadasJugador(ctx context.Context, in *apiNameNode.Jugador)
 				if err != nil {
 					log.Fatal(err)
 				}
-				jugadas = jugadas + "Jugadas ronda 3: " + response.JugadasJugador
+				jugadas = jugadas + "Jugadas ronda 3: \n" + response.JugadasJugador
 			} else if line[2] == ports[1] {
 				c := apiJugador.NewDataNodeJugadorClient(conn)
 				response, err := c.RetornarJugadas(context.Background(), &apiJugador.JugadorYEtapa{IdJugador: in.IdJugador, NroEtapa: int32(3)})
 				if err != nil {
 					log.Fatal(err)
 				}
-				jugadas = jugadas + "Jugadas ronda 3: " + response.JugadasJugador
+				jugadas = jugadas + "Jugadas ronda 3: \n" + response.JugadasJugador
 			} else if line[2] == ports[2] {
 				c := apiPozo.NewDataNodePozoClient(conn)
 				response, err := c.RetornarJugadas(context.Background(), &apiPozo.JugadorYEtapa{IdJugador: in.IdJugador, NroEtapa: int32(3)})
 				if err != nil {
 					log.Fatal(err)
 				}
-				jugadas = jugadas + "Jugadas ronda 3: " + response.JugadasJugador
+				jugadas = jugadas + "Jugadas ronda 3: \n" + response.JugadasJugador
 			}
 		}
 	}

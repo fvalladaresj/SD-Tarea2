@@ -60,7 +60,7 @@ func (*server) EscribirJugada(ctx context.Context, in *apiPozo.JugadaJugador) (*
 	if err != nil {
 		log.Fatal(err)
 	}
-	_, err2 := f.WriteString(str_Jugada + "\n")
+	_, err2 := f.WriteString(str_Jugada)
 
 	if err2 != nil {
 		log.Fatal(err2)

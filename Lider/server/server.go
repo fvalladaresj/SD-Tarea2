@@ -79,10 +79,24 @@ func interfaz(decision string) {
 
 }
 
+func checkPlayers() string {
+	counter := 0
+	for _, playerStatus := range est_jugadores {
+		if playerStatus == 1 {
+			counter += 1
+		}
+	}
+	if counter == 0 {
+		return "Muertos"
+	} else if counter > 1 {
+		return "Jugable"
+	} else {
+		return "Ganador"
+	}
+}
+
 func manageInput() {
-
 	var input string
-
 	fmt.Println("Bienvenido Lider, por favor espere a que hayan 16 jugadores para iniciar la partida")
 	for {
 		if !(jugadores != 16) {
@@ -92,7 +106,29 @@ func manageInput() {
 
 	for {
 		if est_jugadores[0] == 0 {
-			fmt.Println("El jugador principal ha muerto, no es posible continuar con el juego")
+			if etapa_actual > 1 {
+				etapa_actual = etapa_actual + 1
+			}
+			if checkPlayers() == "Ganador" || etapa_actual > 3 {
+				fmt.Println("El juego del calamar ha finalizado, felicitaciones a los ganadores:")
+				PrintAlive()
+				break
+			} else {
+				fmt.Println("El jugador principal ha muerto, procediendo automáticamente")
+				for {
+					if checkPlayers() == "Ganador" || etapa_actual > 3 {
+						fmt.Println("El juego del calamar ha finalizado, felicitaciones a los ganadores:")
+						PrintAlive()
+						break
+					} else if checkPlayers() == "Muertos" {
+						fmt.Println("Todos los jugadores han muerto")
+						break
+					} else {
+						moves := doPlay(int(etapa_actual))
+						JugarAutomatico(moves, etapa_actual)
+					}
+				}
+			}
 			break
 		} else {
 			if etapa_actual == 0 && etapa_check_1 {
@@ -175,6 +211,131 @@ func (*server) CuantosJugadores(ctx context.Context, in *api.Signal) (*api.Canti
 	return &api.CantidadJugadores{CJugadores: jugadores}, nil
 }
 
+func JugarAutomatico(moves []int32, etapa int32) {
+	if etapa == 1 {
+		players := canPlayPhase1()
+		for _, player := range players {
+			if len(jugadas_acumuladas_e1) < 16 {
+				aux := []int32{moves[player]}
+				jugadas_acumuladas_e1 = append(jugadas_acumuladas_e1, aux)
+			} else {
+				jugadas_acumuladas_e1[player] = append(jugadas_acumuladas_e1[player], moves[player])
+			}
+		}
+		if rnd_actual < 3 && len(players) > 0 {
+			rand.Seed(time.Now().UnixNano())
+
+			// leaderMove := rand.Int31n(int32(5)) + int32(6)
+			var leaderMove int32 = 10
+			//fmt.Printf("Lider: %v", leaderMove)
+			for _, player := range players {
+				if moves[player] >= leaderMove {
+					est_jugadores[player] = 0 //muerto
+					//fmt.Printf("Jugador %v ha muerto, tiro %v y tiene %v puntos", player, moves[player], pts_jugadores_e1[player])
+					fmt.Printf("Jugador %v ha muerto \n", player)
+					go sendRabbit(player, etapa_actual)
+				} else {
+					pts_jugadores_e1[player] = pts_jugadores_e1[player] + moves[player]
+					if pts_jugadores_e1[player] >= 21 {
+						ganadores_e1[player] = 1
+					}
+				}
+			}
+			rnd_actual = rnd_actual + 1
+		} else {
+			for _, player := range players {
+				pts_jugadores_e1[player] = pts_jugadores_e1[player] + moves[player]
+				if pts_jugadores_e1[player] < 21 {
+					est_jugadores[player] = 0
+					//fmt.Printf("Jugador %v ha muerto, tiro %v y tiene %v puntos", player, moves[player], pts_jugadores_e1[player])
+					fmt.Printf("Jugador %v ha muerto \n", player)
+					go sendRabbit(player, etapa_actual)
+				} else {
+					ganadores_e1[player] = 1
+				}
+			}
+			fmt.Print("Etapa 1 finalizada, jugadores vivos: ")
+			PrintAlive()
+			etapa_actual = 2
+			EscribirNameNodeEtapa1()
+		}
+	} else if etapa == 2 {
+		rand.Seed(time.Now().UnixNano())
+		leaderMove := rand.Int31n(int32(4)) + int32(1)
+		players := canPlayPhase2()
+		if len(players)%2 == 1 { //es impar
+			indexToDelete := rand.Int31n(int32(len(players)))
+			est_jugadores[players[indexToDelete]] = 0 //muerto
+			fmt.Printf("Jugador %v ha muerto \n", players[indexToDelete])
+			go sendRabbit(players[indexToDelete], etapa_actual)
+			players = append(players[:indexToDelete], players[indexToDelete+1:]...)
+		}
+		teamA := players[0 : len(players)/2]
+		teamB := players[len(players)/2:]
+
+		if sum(teamA)%2 == sum(teamB)%2 && sum(teamA)%2 != leaderMove%2 {
+			if rand.Int31n(int32(2)) == 0 {
+				for _, player := range teamA {
+					est_jugadores[player] = 0
+				}
+			} else {
+				for _, player := range teamB {
+					est_jugadores[player] = 0
+					fmt.Printf("Jugador %v ha muerto \n", player)
+					go sendRabbit(player, etapa_actual)
+				}
+			}
+		} else if sum(teamA)%2 != leaderMove%2 {
+			for _, player := range teamA {
+				est_jugadores[player] = 0
+				fmt.Printf("Jugador %v ha muerto \n", player)
+				go sendRabbit(player, etapa_actual)
+			}
+		} else if sum(teamB)%2 != leaderMove%2 {
+			for _, player := range teamB {
+				est_jugadores[player] = 0
+				fmt.Printf("Jugador %v ha muerto \n", player)
+				go sendRabbit(player, etapa_actual)
+			}
+		}
+		fmt.Print("Etapa 2 finalizada, jugadores vivos: ")
+		PrintAlive()
+		etapa_actual = 3
+		EscribirNameNodeEtapa2y3(int32(2), players, moves)
+	} else {
+		rand.Seed(time.Now().UnixNano())
+		leaderMove := rand.Int31n(int32(4)) + int32(1)
+		players := canPlayPhase2()
+		if len(canPlayPhase2())%2 == 1 { //es impar
+			indexToDelete := rand.Int31n(int32(len(players) + 1))
+			est_jugadores[players[indexToDelete]] = 0 //muerto
+			fmt.Printf("Jugador %v ha muerto \n", players[indexToDelete])
+			go sendRabbit(indexToDelete, etapa_actual)
+			players = append(players[:indexToDelete], players[indexToDelete+1:]...)
+		}
+		playerCouples := tuples(players)
+		for _, couple := range playerCouples {
+			if couple[0] != couple[1] {
+				if Abs(couple[0]-leaderMove) > Abs(couple[1]-leaderMove) {
+					est_jugadores[couple[0]] = 0
+					fmt.Printf("Jugador %v ha muerto \n", couple[0])
+					go sendRabbit(couple[0], etapa_actual)
+
+				} else {
+					est_jugadores[couple[1]] = 0
+					fmt.Printf("Jugador %v ha muerto \n", couple[1])
+					go sendRabbit(couple[1], etapa_actual)
+
+				}
+			}
+		}
+		fmt.Println("Etapa 3 finalizada, jugadores vivos: ")
+		PrintAlive()
+		etapa_actual = 4
+		EscribirNameNodeEtapa2y3(int32(3), players, moves)
+	}
+}
+
 func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, error) {
 	moves := in.Plays
 	if in.Etapa == 1 {
@@ -193,12 +354,12 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 
 			//leaderMove := rand.Int31n(int32(4)) + int32(6)
 			var leaderMove int32 = 10
-			//log.Printf("Lider: %v", leaderMove)
+			//fmt.Printf("Lider: %v", leaderMove)
 			for _, player := range players {
 				if moves[player] >= leaderMove {
 					est_jugadores[player] = 0 //muerto
-					//log.Printf("Jugador %v ha muerto, tiro %v y tiene %v puntos", player, moves[player], pts_jugadores_e1[player])
-					log.Printf("Jugador %v ha muerto", player)
+					//fmt.Printf("Jugador %v ha muerto, tiro %v y tiene %v puntos", player, moves[player], pts_jugadores_e1[player])
+					fmt.Printf("Jugador %v ha muerto \n", player)
 					go sendRabbit(player, etapa_actual)
 				} else {
 					pts_jugadores_e1[player] = pts_jugadores_e1[player] + moves[player]
@@ -215,21 +376,16 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 				pts_jugadores_e1[player] = pts_jugadores_e1[player] + moves[player]
 				if pts_jugadores_e1[player] < 21 {
 					est_jugadores[player] = 0
-					//log.Printf("Jugador %v ha muerto, tiro %v y tiene %v puntos", player, moves[player], pts_jugadores_e1[player])
-					log.Printf("Jugador %v ha muerto", player)
+					//fmt.Printf("Jugador %v ha muerto, tiro %v y tiene %v puntos", player, moves[player], pts_jugadores_e1[player])
+					fmt.Printf("Jugador %v ha muerto \n", player)
 					go sendRabbit(player, etapa_actual)
 				} else {
 					ganadores_e1[player] = 1
 				}
 			}
-			fmt.Print("Etapa 1 finalizada, jugadores vivos: ")
-			for i := range est_jugadores {
-				if est_jugadores[i] == 1 {
-					fmt.Printf("%v ", i)
-				}
-			}
+			fmt.Println("Etapa 1 finalizada, jugadores vivos: ")
+			PrintAlive()
 			etapa_check_2 = true
-			fmt.Println()
 			EscribirNameNodeEtapa1()
 			return &api.EstadoJugador{Estado: est_jugadores, Ronda: 4, JugadorGano: ganadores_e1[0]}, nil
 		}
@@ -240,7 +396,7 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 		if len(players)%2 == 1 { //es impar
 			indexToDelete := rand.Int31n(int32(len(players)))
 			est_jugadores[players[indexToDelete]] = 0 //muerto
-			log.Printf("Jugador %v ha muerto, eliminado al azar", players[indexToDelete])
+			fmt.Printf("Jugador %v ha muerto \n", players[indexToDelete])
 			go sendRabbit(players[indexToDelete], etapa_actual)
 			players = append(players[:indexToDelete], players[indexToDelete+1:]...)
 		}
@@ -255,41 +411,36 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 			} else {
 				for _, player := range teamB {
 					est_jugadores[player] = 0
-					log.Printf("Jugador %v ha muerto", player)
+					fmt.Printf("Jugador %v ha muerto \n", player)
 					go sendRabbit(player, etapa_actual)
 				}
 			}
 		} else if sum(teamA)%2 != leaderMove%2 {
 			for _, player := range teamA {
 				est_jugadores[player] = 0
-				log.Printf("Jugador %v ha muerto", player)
+				fmt.Printf("Jugador %v ha muerto \n", player)
 				go sendRabbit(player, etapa_actual)
 			}
 		} else if sum(teamB)%2 != leaderMove%2 {
 			for _, player := range teamB {
 				est_jugadores[player] = 0
-				log.Printf("Jugador %v ha muerto", player)
+				fmt.Printf("Jugador %v ha muerto \n", player)
 				go sendRabbit(player, etapa_actual)
 			}
 		}
-		fmt.Print("Etapa 2 finalizada, jugadores vivos: ")
-		for i := range est_jugadores {
-			if est_jugadores[i] == 1 {
-				fmt.Printf("%v ", i)
-			}
-		}
+		fmt.Println("Etapa 2 finalizada, jugadores vivos: ")
+		PrintAlive()
 		etapa_check_3 = true
-		fmt.Println()
 		EscribirNameNodeEtapa2y3(int32(2), players, moves)
-		return &api.EstadoJugador{Estado: est_jugadores, JugadorGano: ganadores_e1[0]}, nil
+		return &api.EstadoJugador{Estado: est_jugadores}, nil
 	} else {
 		rand.Seed(time.Now().UnixNano())
 		leaderMove := rand.Int31n(int32(4)) + int32(1)
 		players := canPlayPhase2()
 		if len(canPlayPhase2())%2 == 1 { //es impar
 			indexToDelete := rand.Int31n(int32(len(players) + 1))
-			est_jugadores[indexToDelete] = 0 //muerto
-			log.Printf("Jugador %v ha muerto", players[indexToDelete])
+			est_jugadores[players[indexToDelete]] = 0 //muerto
+			fmt.Printf("Jugador %v ha muerto \n", players[indexToDelete])
 			go sendRabbit(indexToDelete, etapa_actual)
 			players = append(players[:indexToDelete], players[indexToDelete+1:]...)
 		}
@@ -298,31 +449,26 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 			if couple[0] != couple[1] {
 				if Abs(couple[0]-leaderMove) > Abs(couple[1]-leaderMove) {
 					est_jugadores[couple[0]] = 0
-					log.Printf("Jugador %v ha muerto", couple[0])
+					fmt.Printf("Jugador %v ha muerto \n", couple[0])
 					go sendRabbit(couple[0], etapa_actual)
 
 				} else {
 					est_jugadores[couple[1]] = 0
-					log.Printf("Jugador %v ha muerto", couple[1])
+					fmt.Printf("Jugador %v ha muerto \n", couple[1])
 					go sendRabbit(couple[1], etapa_actual)
 
 				}
 			}
 		}
 		fmt.Println("El juego del calamar ha finalizado, felicitaciones a los ganadores:")
-		for i := range est_jugadores {
-			if est_jugadores[i] == 1 {
-				fmt.Printf("%v ", i)
-			}
-		}
+		PrintAlive()
 		etapa_check_4 = true
 		EscribirNameNodeEtapa2y3(int32(3), players, moves)
-		return &api.EstadoJugador{Estado: est_jugadores, JugadorGano: ganadores_e1[0]}, nil
+		return &api.EstadoJugador{Estado: est_jugadores}, nil
 	}
 }
 
 func (*server) EscribirJugada(ctx context.Context, in *api.JugadaJugador) (*api.Signal, error) {
-
 	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
 	var str_Etapa string = strconv.FormatInt(int64(in.Etapa), 10)
 
@@ -339,7 +485,7 @@ func (*server) EscribirJugada(ctx context.Context, in *api.JugadaJugador) (*api.
 	if err != nil {
 		log.Fatal(err)
 	}
-	_, err2 := f.WriteString(str_Jugada + "\n")
+	_, err2 := f.WriteString(str_Jugada)
 
 	if err2 != nil {
 		log.Fatal(err2)
@@ -513,4 +659,34 @@ func BuscarJugadas(id int32) string {
 		log.Fatal(err)
 	}
 	return response.JugadasJugador
+}
+
+func doPlay(etapa int) []int32 {
+	var result []int32
+
+	rand.Seed(time.Now().UnixNano())
+
+	if etapa == 1 {
+		for i := 0; i < 16; i++ {
+			result = append(result, rand.Int31n(int32(10))+1)
+		}
+	} else if etapa == 2 {
+		for i := 0; i < 16; i++ {
+			result = append(result, rand.Int31n(int32(4))+1)
+		}
+	} else if etapa == 3 {
+		for i := 0; i < 16; i++ {
+			result = append(result, rand.Int31n(int32(10))+1)
+		}
+	}
+	return result
+}
+
+func PrintAlive() {
+	for i := range est_jugadores {
+		if est_jugadores[i] == 1 {
+			fmt.Printf("%v ", i)
+		}
+	}
+	fmt.Println()
 }
