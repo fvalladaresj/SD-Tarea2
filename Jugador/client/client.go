@@ -247,9 +247,7 @@ func manageInput() {
 				break
 			}
 			if response.Estado[0] == 1 {
-				fmt.Println("Felicitaciones por ganar la tercera etapa, ingrese continuar para pasar a la siguiente etapa")
-				var input string
-				fmt.Scanln(&input)
+				fmt.Println("Felicitaciones por ganar la tercera etapa")
 				etapa_jugada3 = true
 				fmt.Println("Felicitaciones has ganado el juego del calamar")
 				break

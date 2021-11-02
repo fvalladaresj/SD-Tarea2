@@ -64,17 +64,21 @@ func interfaz(decision string) {
 			break
 		} else {
 			fmt.Println("No ha ingresado una opcion valida por favor ingrese 1 o 2")
-			fmt.Scanln(&dec)
+			// fmt.Scanln(&dec)
 		}
 	}
 
 	if decision == "1" {
 		etapa_actual = etapa_actual + 1
 	} else if decision == "2" {
-		id := 0
-		fmt.Println("Ingrese id del jugador: ")
-		fmt.Scanln(&id)
-		fmt.Println(BuscarJugadas(int32(id)))
+		if etapa_actual < 1 {
+			fmt.Println("Aún no se ha jugado la primera etapa por lo que no es posible revisar jugadas.")
+		} else {
+			id := 0
+			fmt.Println("Ingrese id del jugador: ")
+			fmt.Scanln(&id)
+			fmt.Println(BuscarJugadas(int32(id)))
+		}
 	}
 
 }
@@ -107,7 +111,7 @@ func manageInput() {
 	for {
 		if est_jugadores[0] == 0 {
 			if etapa_actual > 1 {
-				etapa_actual = etapa_actual + 1
+				etapa_check_2 = true
 			}
 			if checkPlayers() == "Ganador" || etapa_actual > 3 {
 				fmt.Println("El juego del calamar ha finalizado, felicitaciones a los ganadores:")
@@ -116,7 +120,7 @@ func manageInput() {
 			} else {
 				fmt.Println("El jugador principal ha muerto, procediendo automáticamente")
 				for {
-					if checkPlayers() == "Ganador" || etapa_actual > 3 {
+					if checkPlayers() == "Ganador" || etapa_actual > 3 || etapa_check_4 {
 						fmt.Println("El juego del calamar ha finalizado, felicitaciones a los ganadores:")
 						PrintAlive()
 						break
@@ -124,8 +128,42 @@ func manageInput() {
 						fmt.Println("Todos los jugadores han muerto")
 						break
 					} else {
-						moves := doPlay(int(etapa_actual))
-						JugarAutomatico(moves, etapa_actual)
+						if etapa_actual == 1 && etapa_check_2 {
+							etapa_check_2 = false
+							for {
+								fmt.Println("Indique el numero de una de las siguientes accione2s a realizar:")
+								fmt.Println("1. Iniciar la segunda etapa")
+								fmt.Println("2. Consultar Jugadas de un jugador")
+								fmt.Scanln(&input)
+								if input == "1" {
+									interfaz(input)
+									moves := doPlay(int(etapa_actual))
+									JugarAutomatico(moves, etapa_actual)
+									break
+								} else {
+									interfaz(input)
+								}
+							}
+						} else if etapa_actual == 2 && etapa_check_3 {
+							etapa_check_3 = false
+							for {
+								fmt.Println("Indique el numero de una de las siguientes acciones a realizar:")
+								fmt.Println("1. Iniciar la tercera etapa")
+								fmt.Println("2. Consultar Jugadas de un jugador")
+								fmt.Scanln(&input)
+								if input == "1" {
+									interfaz(input)
+									moves := doPlay(int(etapa_actual))
+									JugarAutomatico(moves, etapa_actual)
+									break
+								} else {
+									interfaz(input)
+								}
+							}
+						} else {
+							moves := doPlay(int(etapa_actual))
+							JugarAutomatico(moves, etapa_actual)
+						}
 					}
 				}
 			}
@@ -134,14 +172,22 @@ func manageInput() {
 			if etapa_actual == 0 && etapa_check_1 {
 				etapa_check_1 = false
 				fmt.Println("Ya hay 16 Jugadores, ahora puede dar inicio a la primera etapa")
-				fmt.Println("Indique el numero de la una de las siguientes acciones a realizar:")
-				fmt.Println("1. Iniciar primera etapa")
-				fmt.Scanln(&input)
-				interfaz(input)
+				for {
+					fmt.Println("Indique el numero de una de las siguientes acciones a realizar:")
+					fmt.Println("1. Iniciar la primera etapa")
+					fmt.Println("2. Consultar Jugadas de un jugador")
+					fmt.Scanln(&input)
+					if input == "1" {
+						interfaz(input)
+						break
+					} else {
+						interfaz(input)
+					}
+				}
 			} else if etapa_actual == 1 && etapa_check_2 {
 				etapa_check_2 = false
 				for {
-					fmt.Println("Indique el numero de la una de las siguientes acciones a realizar:")
+					fmt.Println("Indique el numero de una de las siguientes acciones a realizar:")
 					fmt.Println("1. Iniciar la segunda etapa")
 					fmt.Println("2. Consultar Jugadas de un jugador")
 					fmt.Scanln(&input)
@@ -155,7 +201,7 @@ func manageInput() {
 			} else if etapa_actual == 2 && etapa_check_3 {
 				etapa_check_3 = false
 				for {
-					fmt.Println("Indique el numero de la una de las siguientes acciones a realizar:")
+					fmt.Println("Indique el numero de una de las siguientes acciones a realizar:")
 					fmt.Println("1. Iniciar la tercera etapa")
 					fmt.Println("2. Consultar Jugadas de un jugador")
 					fmt.Scanln(&input)
@@ -256,7 +302,7 @@ func JugarAutomatico(moves []int32, etapa int32) {
 			}
 			fmt.Print("Etapa 1 finalizada, jugadores vivos: ")
 			PrintAlive()
-			etapa_actual = 2
+			etapa_check_2 = true
 			EscribirNameNodeEtapa1()
 		}
 	} else if etapa == 2 {
@@ -300,14 +346,14 @@ func JugarAutomatico(moves []int32, etapa int32) {
 		}
 		fmt.Print("Etapa 2 finalizada, jugadores vivos: ")
 		PrintAlive()
-		etapa_actual = 3
+		etapa_check_3 = true
 		EscribirNameNodeEtapa2y3(int32(2), players, moves)
 	} else {
 		rand.Seed(time.Now().UnixNano())
 		leaderMove := rand.Int31n(int32(4)) + int32(1)
 		players := canPlayPhase2()
 		if len(canPlayPhase2())%2 == 1 { //es impar
-			indexToDelete := rand.Int31n(int32(len(players) + 1))
+			indexToDelete := rand.Int31n(int32(len(players)))
 			est_jugadores[players[indexToDelete]] = 0 //muerto
 			fmt.Printf("Jugador %v ha muerto \n", players[indexToDelete])
 			go sendRabbit(indexToDelete, etapa_actual)
@@ -331,7 +377,7 @@ func JugarAutomatico(moves []int32, etapa int32) {
 		}
 		fmt.Println("Etapa 3 finalizada, jugadores vivos: ")
 		PrintAlive()
-		etapa_actual = 4
+		etapa_check_4 = true
 		EscribirNameNodeEtapa2y3(int32(3), players, moves)
 	}
 }
@@ -438,7 +484,7 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 		leaderMove := rand.Int31n(int32(4)) + int32(1)
 		players := canPlayPhase2()
 		if len(canPlayPhase2())%2 == 1 { //es impar
-			indexToDelete := rand.Int31n(int32(len(players) + 1))
+			indexToDelete := rand.Int31n(int32(len(players)))
 			est_jugadores[players[indexToDelete]] = 0 //muerto
 			fmt.Printf("Jugador %v ha muerto \n", players[indexToDelete])
 			go sendRabbit(indexToDelete, etapa_actual)
