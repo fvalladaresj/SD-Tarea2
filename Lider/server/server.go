@@ -64,6 +64,7 @@ func interfaz(decision string) {
 			break
 		} else {
 			fmt.Println("No ha ingresado una opcion valida por favor ingrese 1 o 2")
+			break
 			// fmt.Scanln(&dec)
 		}
 	}
