@@ -13,17 +13,21 @@ import (
 	"google.golang.org/grpc"
 )
 
+// Manejo de errores
 func check(e error) {
 	if e != nil {
 		panic(e)
 	}
 }
 
+// Pozo acumulado
 var pool int32 = 0
 
 type server struct {
 	apiPozo.UnimplementedDataNodePozoServer
 }
+
+// Funcion que permite escuchar por GRPC.
 
 func main() {
 	go listenRabbit()
@@ -41,6 +45,8 @@ func main() {
 		log.Fatalf("failed to serve: %s", err)
 	}
 }
+
+// Funcion de DataNode: escribe determinada jugada de jugador.
 
 func (*server) EscribirJugada(ctx context.Context, in *apiPozo.JugadaJugador) (*apiPozo.Signal, error) {
 
@@ -70,6 +76,8 @@ func (*server) EscribirJugada(ctx context.Context, in *apiPozo.JugadaJugador) (*
 
 }
 
+// Funcion de Datanode: retorna las jugadas de determinado jugador en una determinada ronda.
+
 func (*server) RetornarJugadas(ctx context.Context, in *apiPozo.JugadorYEtapa) (*apiPozo.JugadasArchivo, error) {
 
 	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
@@ -88,6 +96,8 @@ func (*server) RetornarJugadas(ctx context.Context, in *apiPozo.JugadorYEtapa) (
 
 }
 
+// Retorna el monto acumulado en el pozo
+
 func (*server) Monto(ctx context.Context, in *apiPozo.Signal) (*apiPozo.MontoJugador, error) {
 
 	dat, err := os.ReadFile("Pool.txt")
@@ -104,6 +114,8 @@ func (*server) Monto(ctx context.Context, in *apiPozo.Signal) (*apiPozo.MontoJug
 	return &apiPozo.MontoJugador{Monto: int32(intVar)}, nil
 
 }
+
+// metodo para escuchar por parte de rabbitMQ
 
 func listenRabbit() {
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
@@ -147,11 +159,15 @@ func listenRabbit() {
 	<-forever
 }
 
+//Manejo de errores
+
 func failOnError(err error, msg string) {
 	if err != nil {
 		log.Fatalf("%s: %s", msg, err)
 	}
 }
+
+// Escribe en el archivo la informacion del jugador muerto y el pozo acumulado.
 
 func EscribirMuerto(deathInfo string, pool int32) {
 	strPool := strconv.FormatInt(int64(pool), 10)

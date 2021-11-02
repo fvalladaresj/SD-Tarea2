@@ -16,6 +16,8 @@ import (
 	"google.golang.org/grpc"
 )
 
+//Funcion que implementa la interfaz del jugador
+
 func interfaz() {
 
 	var dec string
@@ -45,6 +47,8 @@ func interfaz() {
 		}
 	}
 }
+
+// Funcion que almacena la jugada del jugador humano y genera las jugadas de los bots.
 
 func doPlay(etapa int, gano bool) []int32 {
 	var result []int32
@@ -108,6 +112,8 @@ func doPlay(etapa int, gano bool) []int32 {
 	return result
 }
 
+// funcion que Chequea si el jugador gano
+
 func checkWinner(status []int32) bool {
 	for i := 1; i < 16; i++ {
 		if status[i] == 1 {
@@ -120,6 +126,8 @@ func checkWinner(status []int32) bool {
 type server struct {
 	apiJugador.UnimplementedDataNodeJugadorServer
 }
+
+// Funcion para que el DataNode escucha a traves de GRPC
 
 func main() {
 	go manageInput()
@@ -138,6 +146,8 @@ func main() {
 	}
 
 }
+
+// Rutina que se encarga de manejar el input del jugador
 
 func manageInput() {
 	var etapa_jugada1 bool = false
@@ -256,6 +266,8 @@ func manageInput() {
 	}
 }
 
+//// Funcion de DataNode: Escriba las jugadas de determinado en un archivo.
+
 func (*server) EscribirJugada(ctx context.Context, in *apiJugador.JugadaJugador) (*apiJugador.Signal, error) {
 
 	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
@@ -283,6 +295,8 @@ func (*server) EscribirJugada(ctx context.Context, in *apiJugador.JugadaJugador)
 	return &apiJugador.Signal{Sign: true}, nil
 
 }
+
+// Esta funcion es de DataNode, retorna las jugadas de un jugador determinado de una determinada etapa segun se requiera.
 
 func (*server) RetornarJugadas(ctx context.Context, in *apiJugador.JugadorYEtapa) (*apiJugador.JugadasArchivo, error) {
 

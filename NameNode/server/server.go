@@ -46,6 +46,8 @@ func main() {
 
 }
 
+// Funcion que se encarga de escribir las jugadas de un jugador a traves de todas las rondas/etapas.
+
 func (*server) EscribirJugada(ctx context.Context, in *apiNameNode.JugadaJugador) (*apiNameNode.Signal, error) {
 
 	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
@@ -93,6 +95,8 @@ func (*server) EscribirJugada(ctx context.Context, in *apiNameNode.JugadaJugador
 
 	return &apiNameNode.Signal{Sign: true}, nil
 }
+
+// Funcion que se encarga de retornar las jugadas de un jugador a traves de todas las rondas/etapas.
 
 func (*server) PedirJugadasJugador(ctx context.Context, in *apiNameNode.Jugador) (*apiNameNode.TodasLasJugadas, error) {
 	str_Idjugador := strconv.FormatInt(int64(in.IdJugador), 10)
