@@ -8,9 +8,17 @@ else
    endif
 endif
 
-build jugador:
+jugador:
+	go run Jugador/client/client.go
 
-run jugador:
+lider:
+	go run Lider/server/server.go
+
+namenode:
+	go run NameNode/server/server.go
+
+pozo:
+	go run Pozo/server.go
 
 clean:
 	$(RM) *.txt
