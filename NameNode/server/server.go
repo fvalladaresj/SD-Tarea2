@@ -24,7 +24,7 @@ type server struct {
 }
 
 //Puertos   		 	lider/api  	  jugador/apiJugador   pozo/apiPozo
-var ports = [3]string{"0.0.0.0:50051", "0.0.0.0:50053", "0.0.0.0:50054"}
+var ports = [3]string{"10.6.43.122:50051", "10.6.43.121:50053", "10.6.43.124:50054"}
 
 // main start a gRPC server and waits for connection
 func main() {
@@ -75,10 +75,6 @@ func (*server) EscribirJugada(ctx context.Context, in *apiNameNode.JugadaJugador
 		log.Fatalf("did not connect: %s", err)
 	}
 	defer conn.Close()
-
-	// 						   lider		   jugador		     pozo
-	//var ports = [3]string{"0.0.0.0:50051", "0.0.0.0:50053", "0.0.0.0:50054"}
-	// 						   api		     apiJugador		     apiPozo
 
 	if port == 0 {
 		c := api.NewLiderClient(conn)

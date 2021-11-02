@@ -439,7 +439,7 @@ func (*server) RetornarJugadas(ctx context.Context, in *api.JugadorYEtapa) (*api
 func (*server) Monto(ctx context.Context, in *api.Signal) (*api.MontoJugador, error) {
 
 	var conn *grpc.ClientConn
-	conn, err := grpc.Dial("localhost:50054", grpc.WithInsecure())
+	conn, err := grpc.Dial("10.6.43.124:50054", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %s", err)
 	}
@@ -657,7 +657,7 @@ func failOnError(err error, msg string) {
 
 // Funcion que se encarga de reportar cuando mueren jugadores al Poz
 func sendRabbit(player int32, round int32) {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err := amqp.Dial("amqp://username:pass@10.6.43.124:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
@@ -692,7 +692,7 @@ func sendRabbit(player int32, round int32) {
 
 func EscribirNameNodeEtapa1() {
 	var conn *grpc.ClientConn
-	conn, err := grpc.Dial("localhost:50052", grpc.WithInsecure())
+	conn, err := grpc.Dial("10.6.43.123:50052", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %s", err)
 	}
@@ -706,7 +706,7 @@ func EscribirNameNodeEtapa1() {
 // Escribe las jugadas realizadas por los jugadores en la etapa 2 y 3
 func EscribirNameNodeEtapa2y3(etapa int32, jugadores []int32, jugadas []int32) {
 	var conn *grpc.ClientConn
-	conn, err := grpc.Dial("localhost:50052", grpc.WithInsecure())
+	conn, err := grpc.Dial("10.6.43.123:50052", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %s", err)
 	}
@@ -721,7 +721,7 @@ func EscribirNameNodeEtapa2y3(etapa int32, jugadores []int32, jugadas []int32) {
 // Se encarga de ir a buscar las jugadas de determinado jugador al NameNode.
 func BuscarJugadas(id int32) string {
 	var conn *grpc.ClientConn
-	conn, err := grpc.Dial("localhost:50052", grpc.WithInsecure())
+	conn, err := grpc.Dial("10.6.43.123:50052", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %s", err)
 	}

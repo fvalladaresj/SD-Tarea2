@@ -46,7 +46,7 @@ func manageInput() {
 	var etapa_jugada3 bool = false
 
 	var conn *grpc.ClientConn
-	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+	conn, err := grpc.Dial("10.6.43.122:50051", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %s", err)
 	}
@@ -163,7 +163,7 @@ func interfaz() {
 	var dec string
 
 	var conn *grpc.ClientConn
-	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+	conn, err := grpc.Dial("10.6.43.122:50051", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %s", err)
 	}
