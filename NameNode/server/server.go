@@ -23,10 +23,8 @@ type server struct {
 	apiNameNode.UnimplementedNameNodeServer
 }
 
-// 						   lider		   jugador		     pozo
+//Puertos   		 	lider/api  	  jugador/apiJugador   pozo/apiPozo
 var ports = [3]string{"0.0.0.0:50051", "0.0.0.0:50053", "0.0.0.0:50054"}
-
-// 						   api		     apiJugador		     apiPozo
 
 // main start a gRPC server and waits for connection
 func main() {
@@ -46,10 +44,10 @@ func main() {
 
 }
 
+/////////////////////////////////////////////// Metodos GRCP /////////////////////////////////////////////////////////////
+
 // Funcion que se encarga de escribir las jugadas de un jugador a traves de todas las rondas/etapas.
-
 func (*server) EscribirJugada(ctx context.Context, in *apiNameNode.JugadaJugador) (*apiNameNode.Signal, error) {
-
 	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
 	var str_Etapa string = strconv.FormatInt(int64(in.Etapa), 10)
 
@@ -97,7 +95,6 @@ func (*server) EscribirJugada(ctx context.Context, in *apiNameNode.JugadaJugador
 }
 
 // Funcion que se encarga de retornar las jugadas de un jugador a traves de todas las rondas/etapas.
-
 func (*server) PedirJugadasJugador(ctx context.Context, in *apiNameNode.Jugador) (*apiNameNode.TodasLasJugadas, error) {
 	str_Idjugador := strconv.FormatInt(int64(in.IdJugador), 10)
 	etapa1 := "Jugador_" + str_Idjugador + " Ronda_1"

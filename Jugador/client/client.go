@@ -16,119 +16,11 @@ import (
 	"google.golang.org/grpc"
 )
 
-//Funcion que implementa la interfaz del jugador
-
-func interfaz() {
-
-	var dec string
-
-	var conn *grpc.ClientConn
-	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("did not connect: %s", err)
-	}
-	defer conn.Close()
-	c := api.NewLiderClient(conn)
-
-	for {
-		fmt.Println("Elija entre las siguientes opciones su siguiente accion a realizar")
-		fmt.Println("1. Continuar a la siguiente etapa")
-		fmt.Println("2. Revisar el Monto acumulado en el pozo")
-		fmt.Scanln(&dec)
-		if dec == "1" {
-			break
-		} else if dec == "2" {
-			fmt.Println("El monto acumulado es:")
-			response, err := c.Monto(context.Background(), &api.Signal{Sign: true})
-			if err != nil {
-				log.Fatalf("No se llama: %s", err)
-			}
-			fmt.Println(response.Monto)
-		}
-	}
-}
-
-// Funcion que almacena la jugada del jugador humano y genera las jugadas de los bots.
-
-func doPlay(etapa int, gano bool) []int32 {
-	var result []int32
-	var jugada int32
-
-	rand.Seed(time.Now().UnixNano())
-
-	if etapa == 1 {
-		if gano {
-			result = append(result, int32(0))
-			for i := 0; i < 15; i++ {
-				result = append(result, rand.Int31n(int32(10))+1)
-			}
-		} else {
-			fmt.Println("Por favor ingrese un numero del 1 al 10")
-			fmt.Scanln(&jugada)
-			for {
-				if jugada >= 1 && jugada <= 10 {
-					break
-				} else {
-					fmt.Println("Por favor ingrese un numero del 1 al 10")
-					fmt.Scanln(&jugada)
-				}
-			}
-			result = append(result, int32(jugada))
-			for i := 0; i < 15; i++ {
-				result = append(result, rand.Int31n(int32(10))+1)
-			}
-		}
-	} else if etapa == 2 {
-		fmt.Println("Por favor ingrese un numero del 1 al 4")
-		fmt.Scanln(&jugada)
-		for {
-			if jugada >= 1 && jugada <= 4 {
-				break
-			} else {
-				fmt.Println("Por favor ingrese un numero del 1 al 4")
-				fmt.Scanln(&jugada)
-			}
-		}
-		result = append(result, int32(jugada))
-		for i := 0; i < 15; i++ {
-			result = append(result, rand.Int31n(int32(4))+1)
-		}
-	} else if etapa == 3 {
-		fmt.Println("Por favor ingrese un numero del 1 al 10")
-		fmt.Scanln(&jugada)
-		for {
-			if jugada >= 1 && jugada <= 10 {
-				break
-			} else {
-				fmt.Println("Por favor ingrese un numero del 1 al 10")
-				fmt.Scanln(&jugada)
-			}
-		}
-		result = append(result, int32(jugada))
-		for i := 0; i < 15; i++ {
-			result = append(result, rand.Int31n(int32(10))+1)
-		}
-	}
-	return result
-}
-
-// funcion que Chequea si el jugador gano
-
-func checkWinner(status []int32) bool {
-	for i := 1; i < 16; i++ {
-		if status[i] == 1 {
-			return false
-		}
-	}
-	return true
-}
-
 type server struct {
 	apiJugador.UnimplementedDataNodeJugadorServer
 }
 
 // Funcion para que el DataNode escucha a traves de GRPC
-
 func main() {
 	go manageInput()
 	// create a listener on TCP port 50053
@@ -148,7 +40,6 @@ func main() {
 }
 
 // Rutina que se encarga de manejar el input del jugador
-
 func manageInput() {
 	var etapa_jugada1 bool = false
 	var etapa_jugada2 bool = false
@@ -266,8 +157,40 @@ func manageInput() {
 	}
 }
 
-//// Funcion de DataNode: Escriba las jugadas de determinado en un archivo.
+//Funcion que implementa la interfaz del jugador
+func interfaz() {
 
+	var dec string
+
+	var conn *grpc.ClientConn
+	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %s", err)
+	}
+	defer conn.Close()
+	c := api.NewLiderClient(conn)
+
+	for {
+		fmt.Println("Elija entre las siguientes opciones su siguiente accion a realizar")
+		fmt.Println("1. Continuar a la siguiente etapa")
+		fmt.Println("2. Revisar el Monto acumulado en el pozo")
+		fmt.Scanln(&dec)
+		if dec == "1" {
+			break
+		} else if dec == "2" {
+			fmt.Println("El monto acumulado es:")
+			response, err := c.Monto(context.Background(), &api.Signal{Sign: true})
+			if err != nil {
+				log.Fatalf("No se llama: %s", err)
+			}
+			fmt.Println(response.Monto)
+		}
+	}
+}
+
+/////////////////////////////////////////////// Metodos GRCP /////////////////////////////////////////////////////////////
+
+// Funcion de DataNode: Escriba las jugadas de determinado en un archivo.
 func (*server) EscribirJugada(ctx context.Context, in *apiJugador.JugadaJugador) (*apiJugador.Signal, error) {
 
 	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
@@ -297,7 +220,6 @@ func (*server) EscribirJugada(ctx context.Context, in *apiJugador.JugadaJugador)
 }
 
 // Esta funcion es de DataNode, retorna las jugadas de un jugador determinado de una determinada etapa segun se requiera.
-
 func (*server) RetornarJugadas(ctx context.Context, in *apiJugador.JugadorYEtapa) (*apiJugador.JugadasArchivo, error) {
 
 	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
@@ -314,4 +236,79 @@ func (*server) RetornarJugadas(ctx context.Context, in *apiJugador.JugadorYEtapa
 
 	return &apiJugador.JugadasArchivo{JugadasJugador: string_content}, nil
 
+}
+
+////////////////////////////////////////////////////////// Funciones varias//////////////////////////////////////////////
+
+// Funcion que almacena la jugada del jugador humano y genera las jugadas de los bots.
+func doPlay(etapa int, gano bool) []int32 {
+	var result []int32
+	var jugada int32
+
+	rand.Seed(time.Now().UnixNano())
+
+	if etapa == 1 {
+		if gano {
+			result = append(result, int32(0))
+			for i := 0; i < 15; i++ {
+				result = append(result, rand.Int31n(int32(10))+1)
+			}
+		} else {
+			fmt.Println("Por favor ingrese un numero del 1 al 10")
+			fmt.Scanln(&jugada)
+			for {
+				if jugada >= 1 && jugada <= 10 {
+					break
+				} else {
+					fmt.Println("Por favor ingrese un numero del 1 al 10")
+					fmt.Scanln(&jugada)
+				}
+			}
+			result = append(result, int32(jugada))
+			for i := 0; i < 15; i++ {
+				result = append(result, rand.Int31n(int32(10))+1)
+			}
+		}
+	} else if etapa == 2 {
+		fmt.Println("Por favor ingrese un numero del 1 al 4")
+		fmt.Scanln(&jugada)
+		for {
+			if jugada >= 1 && jugada <= 4 {
+				break
+			} else {
+				fmt.Println("Por favor ingrese un numero del 1 al 4")
+				fmt.Scanln(&jugada)
+			}
+		}
+		result = append(result, int32(jugada))
+		for i := 0; i < 15; i++ {
+			result = append(result, rand.Int31n(int32(4))+1)
+		}
+	} else if etapa == 3 {
+		fmt.Println("Por favor ingrese un numero del 1 al 10")
+		fmt.Scanln(&jugada)
+		for {
+			if jugada >= 1 && jugada <= 10 {
+				break
+			} else {
+				fmt.Println("Por favor ingrese un numero del 1 al 10")
+				fmt.Scanln(&jugada)
+			}
+		}
+		result = append(result, int32(jugada))
+		for i := 0; i < 15; i++ {
+			result = append(result, rand.Int31n(int32(10))+1)
+		}
+	}
+	return result
+}
+
+// funcion que Chequea si el jugador gano
+func checkWinner(status []int32) bool {
+	for i := 1; i < 16; i++ {
+		if status[i] == 1 {
+			return false
+		}
+	}
+	return true
 }

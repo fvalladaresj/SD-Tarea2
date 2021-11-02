@@ -69,7 +69,6 @@ func main() {
 }
 
 // rutina que permite tener la interfaz del lider
-
 func manageInput() {
 	var input string
 	fmt.Println("Bienvenido Lider, por favor espere a que hayan 16 jugadores para iniciar la partida")
@@ -190,10 +189,38 @@ func manageInput() {
 	}
 }
 
+// Administra las deciciones que puede hacer el lider en su interfaz
+func interfaz(decision string) {
+	var dec string = decision
+
+	for {
+		if dec == "1" || dec == "2" {
+			break
+		} else {
+			fmt.Println("No ha ingresado una opcion valida por favor ingrese 1 o 2")
+			break
+			// fmt.Scanln(&dec)
+		}
+	}
+
+	if decision == "1" {
+		etapa_actual = etapa_actual + 1
+	} else if decision == "2" {
+		if etapa_actual < 1 {
+			fmt.Println("Aún no se ha jugado la primera etapa por lo que no es posible revisar jugadas.")
+		} else {
+			id := 0
+			fmt.Println("Ingrese id del jugador: ")
+			fmt.Scanln(&id)
+			fmt.Println(BuscarJugadas(int32(id)))
+		}
+	}
+
+}
+
 /////////////////////////////////////////////// Metodos GRCP /////////////////////////////////////////////////////////////
 
 // Esta funcion sirve para inscribirse en el juego del calamar.
-
 func (*server) ParticiparJuego(ctx context.Context, in *api.PeticionParticipar) (*api.ConfirmacionParticipacion, error) {
 	if in.Participar == "participar" {
 		if jugadores < 16 {
@@ -211,7 +238,6 @@ func (*server) ParticiparJuego(ctx context.Context, in *api.PeticionParticipar) 
 }
 
 // Informa la etapa actual en la que esta el Juego
-
 func (*server) EstadoEtapas(ctx context.Context, in *api.Check) (*api.State, error) {
 	if etapa_actual == 0 {
 		return &api.State{Etapa: 0}, nil
@@ -229,13 +255,11 @@ func (*server) EstadoEtapas(ctx context.Context, in *api.Check) (*api.State, err
 }
 
 // Retorna la cantidad de jugadores que hay en el juego.
-
 func (*server) CuantosJugadores(ctx context.Context, in *api.Signal) (*api.CantidadJugadores, error) {
 	return &api.CantidadJugadores{CJugadores: jugadores}, nil
 }
 
 // Esta funcion Recibe las jugadas de los jugadores y lleva gran parte de la logica del juego, definiendo lo que se realiza segun la etapa.
-
 func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, error) {
 	moves := in.Plays
 	if in.Etapa == 1 {
@@ -252,13 +276,10 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 		if rnd_actual < 3 && len(players) > 0 {
 			rand.Seed(time.Now().UnixNano())
 
-			//leaderMove := rand.Int31n(int32(4)) + int32(6)
-			var leaderMove int32 = 10
-			//fmt.Printf("Lider: %v", leaderMove)
+			leaderMove := rand.Int31n(int32(4)) + int32(6)
 			for _, player := range players {
 				if moves[player] >= leaderMove {
 					est_jugadores[player] = 0 //muerto
-					//fmt.Printf("Jugador %v ha muerto, tiro %v y tiene %v puntos", player, moves[player], pts_jugadores_e1[player])
 					fmt.Printf("Jugador %v ha muerto \n", player)
 					go sendRabbit(player, etapa_actual)
 				} else {
@@ -276,7 +297,6 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 				pts_jugadores_e1[player] = pts_jugadores_e1[player] + moves[player]
 				if pts_jugadores_e1[player] < 21 {
 					est_jugadores[player] = 0
-					//fmt.Printf("Jugador %v ha muerto, tiro %v y tiene %v puntos", player, moves[player], pts_jugadores_e1[player])
 					fmt.Printf("Jugador %v ha muerto \n", player)
 					go sendRabbit(player, etapa_actual)
 				} else {
@@ -369,7 +389,6 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 }
 
 // Funcion de DataNode: Escriba las jugadas de determinado en un archivo.
-
 func (*server) EscribirJugada(ctx context.Context, in *api.JugadaJugador) (*api.Signal, error) {
 	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
 	var str_Etapa string = strconv.FormatInt(int64(in.Etapa), 10)
@@ -398,7 +417,6 @@ func (*server) EscribirJugada(ctx context.Context, in *api.JugadaJugador) (*api.
 }
 
 // Esta funcion es de DataNode, retorna las jugadas de un jugador determinado de una determinada etapa segun se requiera.
-
 func (*server) RetornarJugadas(ctx context.Context, in *api.JugadorYEtapa) (*api.JugadasArchivo, error) {
 
 	var str_Idjugador string = strconv.FormatInt(int64(in.IdJugador), 10)
@@ -418,7 +436,6 @@ func (*server) RetornarJugadas(ctx context.Context, in *api.JugadorYEtapa) (*api
 }
 
 // esta funcion sirve para retornar el monto acumulado en el pozo
-
 func (*server) Monto(ctx context.Context, in *api.Signal) (*api.MontoJugador, error) {
 
 	var conn *grpc.ClientConn
@@ -441,7 +458,6 @@ func (*server) Monto(ctx context.Context, in *api.Signal) (*api.MontoJugador, er
 ////////////////////////////////////////////////////////// Funciones varias//////////////////////////////////////////////
 
 // chequea la cantidad de jugadores vivos que hay.
-
 func checkPlayers() string {
 	counter := 0
 	for _, playerStatus := range est_jugadores {
@@ -458,39 +474,7 @@ func checkPlayers() string {
 	}
 }
 
-// Administra las deciciones que puede hacer el lider en su interfaz
-
-func interfaz(decision string) {
-
-	var dec string = decision
-
-	for {
-		if dec == "1" || dec == "2" {
-			break
-		} else {
-			fmt.Println("No ha ingresado una opcion valida por favor ingrese 1 o 2")
-			break
-			// fmt.Scanln(&dec)
-		}
-	}
-
-	if decision == "1" {
-		etapa_actual = etapa_actual + 1
-	} else if decision == "2" {
-		if etapa_actual < 1 {
-			fmt.Println("Aún no se ha jugado la primera etapa por lo que no es posible revisar jugadas.")
-		} else {
-			id := 0
-			fmt.Println("Ingrese id del jugador: ")
-			fmt.Scanln(&id)
-			fmt.Println(BuscarJugadas(int32(id)))
-		}
-	}
-
-}
-
 // Esta funcion lleva la logica de los juegos automaticos de los bots.
-
 func JugarAutomatico(moves []int32, etapa int32) {
 	if etapa == 1 {
 		players := canPlayPhase1()
@@ -505,13 +489,10 @@ func JugarAutomatico(moves []int32, etapa int32) {
 		if rnd_actual < 3 && len(players) > 0 {
 			rand.Seed(time.Now().UnixNano())
 
-			// leaderMove := rand.Int31n(int32(5)) + int32(6)
-			var leaderMove int32 = 10
-			//fmt.Printf("Lider: %v", leaderMove)
+			leaderMove := rand.Int31n(int32(5)) + int32(6)
 			for _, player := range players {
 				if moves[player] >= leaderMove {
 					est_jugadores[player] = 0 //muerto
-					//fmt.Printf("Jugador %v ha muerto, tiro %v y tiene %v puntos", player, moves[player], pts_jugadores_e1[player])
 					fmt.Printf("Jugador %v ha muerto \n", player)
 					go sendRabbit(player, etapa_actual)
 				} else {
@@ -527,7 +508,6 @@ func JugarAutomatico(moves []int32, etapa int32) {
 				pts_jugadores_e1[player] = pts_jugadores_e1[player] + moves[player]
 				if pts_jugadores_e1[player] < 21 {
 					est_jugadores[player] = 0
-					//fmt.Printf("Jugador %v ha muerto, tiro %v y tiene %v puntos", player, moves[player], pts_jugadores_e1[player])
 					fmt.Printf("Jugador %v ha muerto \n", player)
 					go sendRabbit(player, etapa_actual)
 				} else {
@@ -661,7 +641,6 @@ func tuples(array []int32) [][]int32 {
 }
 
 // Retorna valor absoluto de un numero dado
-
 func Abs(x int32) int32 {
 	if x < 0 {
 		return -x
@@ -676,8 +655,7 @@ func failOnError(err error, msg string) {
 	}
 }
 
-// Funcion que se encarga de reportar cuando mueren jugadores al Pozo
-
+// Funcion que se encarga de reportar cuando mueren jugadores al Poz
 func sendRabbit(player int32, round int32) {
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
@@ -726,7 +704,6 @@ func EscribirNameNodeEtapa1() {
 }
 
 // Escribe las jugadas realizadas por los jugadores en la etapa 2 y 3
-
 func EscribirNameNodeEtapa2y3(etapa int32, jugadores []int32, jugadas []int32) {
 	var conn *grpc.ClientConn
 	conn, err := grpc.Dial("localhost:50052", grpc.WithInsecure())
@@ -742,7 +719,6 @@ func EscribirNameNodeEtapa2y3(etapa int32, jugadores []int32, jugadas []int32) {
 }
 
 // Se encarga de ir a buscar las jugadas de determinado jugador al NameNode.
-
 func BuscarJugadas(id int32) string {
 	var conn *grpc.ClientConn
 	conn, err := grpc.Dial("localhost:50052", grpc.WithInsecure())
@@ -759,7 +735,6 @@ func BuscarJugadas(id int32) string {
 }
 
 // Genera un array con las jugadas de todos los jugadores
-
 func doPlay(etapa int) []int32 {
 	var result []int32
 
@@ -782,7 +757,6 @@ func doPlay(etapa int) []int32 {
 }
 
 // Imprime los jugadores que estan vivos cuando se invoca
-
 func PrintAlive() {
 	for i := range est_jugadores {
 		if est_jugadores[i] == 1 {
