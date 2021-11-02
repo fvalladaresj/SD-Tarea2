@@ -30,7 +30,7 @@ En el **Lider** en vez de dar inicio a la etapa, se debe ingresar 2 para ver las
 En caso de que el jugador "humano" pierda, se continuará automáticamente hasta finalizar la etapa y luego mediante el **Lider** se volvera a preguntar si desea dar inicio a la siguiente etapa o consultar las jugadas de un jugador.
 
 ## Juego finalizado 
-Al terminar un juego completamente, usar CTRL+C [^1] para termianr los procesor e ingresar el siguiente comando en cada máquina para limpiar los archivos generados.
+Al terminar un juego completamente, usar CTRL+C [^1] para terminar los procesor e ingresar el siguiente comando en cada máquina para limpiar los archivos generados.
 > make clean 
 
 [^1]: Si bien el proceso del jugador termina automáticamente al ganar o ser eliminado, el proceso del data node debe seguir ejecutándose y debe ser terminado manualente.
