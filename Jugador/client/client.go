@@ -92,20 +92,20 @@ func manageInput() {
 			}
 			if response.JugadorGano == 1 {
 				fmt.Println("Felicitaciones por ganar la primera etapa")
-				interfaz()
-				if response.Ronda < 4 {
-					jugada := doPlay(1, true)
-					_, err := c.Jugar(context.Background(), &api.Jugadas{Etapa: int32(1), Plays: jugada})
-					if err != nil {
-						log.Fatalf("Error Call RPC: %v", err)
-					}
-				}
-				etapa_jugada1 = true
 				if checkWinner(response.Estado) {
 					fmt.Println("Felicitaciones has ganado el juego del calamar")
 					etapa_jugada1 = true
 					break
 				} else {
+					interfaz()
+					if response.Ronda < 4 {
+						jugada := doPlay(1, true)
+						_, err := c.Jugar(context.Background(), &api.Jugadas{Etapa: int32(1), Plays: jugada})
+						if err != nil {
+							log.Fatalf("Error Call RPC: %v", err)
+						}
+					}
+					etapa_jugada1 = true
 					fmt.Println("Espere a las instrucciones para comenzar la segunda etapa")
 					continue
 				}
@@ -125,12 +125,12 @@ func manageInput() {
 			}
 			if response.Estado[0] == 1 {
 				fmt.Println("Felicitaciones por ganar la segunda etapa")
-				interfaz()
-				etapa_jugada2 = true
 				if checkWinner(response.Estado) {
 					fmt.Println("Felicitaciones has ganado el juego del calamar")
 					break
 				} else {
+					interfaz()
+					etapa_jugada2 = true
 					fmt.Println("Espere a las instrucciones para comenzar la tercera etapa")
 					continue
 				}
