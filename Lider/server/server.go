@@ -657,7 +657,7 @@ func failOnError(err error, msg string) {
 
 // Funcion que se encarga de reportar cuando mueren jugadores al Poz
 func sendRabbit(player int32, round int32) {
-	conn, err := amqp.Dial("amqp://marlena:contrasena1324@10.6.43.124:5672/")
+	conn, err := amqp.Dial("amqp://guest:guest@10.6.43.124:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
