@@ -143,51 +143,53 @@ func manageInput() {
 				fmt.Println("El juego del calamar ha finalizado, felicitaciones a los ganadores:")
 				PrintAlive()
 				break
-			} else if etapa_actual == 0 && etapa_check_1 {
-				etapa_check_1 = false
-				fmt.Println("Ya hay 16 Jugadores, ahora puede dar inicio a la primera etapa")
-				for {
-					fmt.Println("Indique el numero de una de las siguientes acciones a realizar:")
-					fmt.Println("1. Iniciar la primera etapa")
-					fmt.Println("2. Consultar Jugadas de un jugador")
-					fmt.Scanln(&input)
-					if input == "1" {
-						interfaz(input)
-						break
-					} else {
-						interfaz(input)
+			} else {
+				if etapa_actual == 0 && etapa_check_1 {
+					etapa_check_1 = false
+					fmt.Println("Ya hay 16 Jugadores, ahora puede dar inicio a la primera etapa")
+					for {
+						fmt.Println("Indique el numero de una de las siguientes acciones a realizar:")
+						fmt.Println("1. Iniciar la primera etapa")
+						fmt.Println("2. Consultar Jugadas de un jugador")
+						fmt.Scanln(&input)
+						if input == "1" {
+							interfaz(input)
+							break
+						} else {
+							interfaz(input)
+						}
 					}
-				}
-			} else if etapa_actual == 1 && etapa_check_2 {
-				etapa_check_2 = false
-				for {
-					fmt.Println("Indique el numero de una de las siguientes acciones a realizar:")
-					fmt.Println("1. Iniciar la segunda etapa")
-					fmt.Println("2. Consultar Jugadas de un jugador")
-					fmt.Scanln(&input)
-					if input == "1" {
-						interfaz(input)
-						break
-					} else {
-						interfaz(input)
+				} else if etapa_actual == 1 && etapa_check_2 {
+					etapa_check_2 = false
+					for {
+						fmt.Println("Indique el numero de una de las siguientes acciones a realizar:")
+						fmt.Println("1. Iniciar la segunda etapa")
+						fmt.Println("2. Consultar Jugadas de un jugador")
+						fmt.Scanln(&input)
+						if input == "1" {
+							interfaz(input)
+							break
+						} else {
+							interfaz(input)
+						}
 					}
-				}
-			} else if etapa_actual == 2 && etapa_check_3 {
-				etapa_check_3 = false
-				for {
-					fmt.Println("Indique el numero de una de las siguientes acciones a realizar:")
-					fmt.Println("1. Iniciar la tercera etapa")
-					fmt.Println("2. Consultar Jugadas de un jugador")
-					fmt.Scanln(&input)
-					if input == "1" {
-						interfaz(input)
-						break
-					} else {
-						interfaz(input)
+				} else if etapa_actual == 2 && etapa_check_3 {
+					etapa_check_3 = false
+					for {
+						fmt.Println("Indique el numero de una de las siguientes acciones a realizar:")
+						fmt.Println("1. Iniciar la tercera etapa")
+						fmt.Println("2. Consultar Jugadas de un jugador")
+						fmt.Scanln(&input)
+						if input == "1" {
+							interfaz(input)
+							break
+						} else {
+							interfaz(input)
+						}
 					}
+				} else if etapa_actual == 3 && etapa_check_4 {
+					break
 				}
-			} else if etapa_actual == 3 && etapa_check_4 {
-				break
 			}
 		}
 	}
