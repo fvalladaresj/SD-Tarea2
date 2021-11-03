@@ -139,7 +139,11 @@ func manageInput() {
 			}
 			break
 		} else {
-			if etapa_actual == 0 && etapa_check_1 {
+			if checkPlayers() == "Ganador" || etapa_actual > 3 {
+				fmt.Println("El juego del calamar ha finalizado, felicitaciones a los ganadores:")
+				PrintAlive()
+				break
+			} else if etapa_actual == 0 && etapa_check_1 {
 				etapa_check_1 = false
 				fmt.Println("Ya hay 16 Jugadores, ahora puede dar inicio a la primera etapa")
 				for {
@@ -380,7 +384,7 @@ func (*server) Jugar(ctx context.Context, in *api.Jugadas) (*api.EstadoJugador, 
 				}
 			}
 		}
-		fmt.Println("El juego del calamar ha finalizado, felicitaciones a los ganadores:")
+		fmt.Println("Etapa 3 finalizada, jugadores vivos: ")
 		PrintAlive()
 		etapa_check_4 = true
 		EscribirNameNodeEtapa2y3(int32(3), players, moves)
