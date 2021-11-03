@@ -161,30 +161,42 @@ func manageInput() {
 					}
 				} else if etapa_actual == 1 && etapa_check_2 {
 					etapa_check_2 = false
-					for {
-						fmt.Println("Indique el numero de una de las siguientes acciones a realizar:")
-						fmt.Println("1. Iniciar la segunda etapa")
-						fmt.Println("2. Consultar Jugadas de un jugador")
-						fmt.Scanln(&input)
-						if input == "1" {
-							interfaz(input)
-							break
-						} else {
-							interfaz(input)
+					if checkPlayers() == "Ganador" || etapa_actual > 3 || etapa_check_4 {
+						fmt.Println("El juego del calamar ha finalizado, felicitaciones a los ganadores:")
+						PrintAlive()
+						break
+					} else {
+						for {
+							fmt.Println("Indique el numero de una de las siguientes acciones a realizar:")
+							fmt.Println("1. Iniciar la segunda etapa")
+							fmt.Println("2. Consultar Jugadas de un jugador")
+							fmt.Scanln(&input)
+							if input == "1" {
+								interfaz(input)
+								break
+							} else {
+								interfaz(input)
+							}
 						}
 					}
 				} else if etapa_actual == 2 && etapa_check_3 {
 					etapa_check_3 = false
-					for {
-						fmt.Println("Indique el numero de una de las siguientes acciones a realizar:")
-						fmt.Println("1. Iniciar la tercera etapa")
-						fmt.Println("2. Consultar Jugadas de un jugador")
-						fmt.Scanln(&input)
-						if input == "1" {
-							interfaz(input)
-							break
-						} else {
-							interfaz(input)
+					if checkPlayers() == "Ganador" || etapa_actual > 3 || etapa_check_4 {
+						fmt.Println("El juego del calamar ha finalizado, felicitaciones a los ganadores:")
+						PrintAlive()
+						break
+					} else {
+						for {
+							fmt.Println("Indique el numero de una de las siguientes acciones a realizar:")
+							fmt.Println("1. Iniciar la tercera etapa")
+							fmt.Println("2. Consultar Jugadas de un jugador")
+							fmt.Scanln(&input)
+							if input == "1" {
+								interfaz(input)
+								break
+							} else {
+								interfaz(input)
+							}
 						}
 					}
 				} else if etapa_actual == 3 && etapa_check_4 {
