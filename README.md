@@ -5,8 +5,13 @@
 * Florencia Sofía Valladares Jerez - 201773007-2 
 
 # Instrucciones
+## En cada máquina
+```go
+export GOPATH="$HOME/go"
+export PATH=$PATH:"$HOME/go/bin" 
+```
 ## Iniciar procesos
-Primero, iniciar los procesos en cada máquina
+Iniciar los procesos en su máquina correspondiente
 ### maquina: dist133 - Jugador
 > make jugador
 ### maquina: dist134 - Lider
@@ -34,5 +39,3 @@ Al terminar un juego completamente, usar CTRL+C [^1] para terminar los procesos 
 > make clean 
 
 [^1]: Si bien el proceso del jugador termina automáticamente al ganar o ser eliminado, el proceso del data node debe seguir ejecutándose y debe ser terminado manualmente.
-
-
