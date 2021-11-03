@@ -115,7 +115,7 @@ func check(e error) {
 
 // metodo para escuchar por parte de rabbitMQ
 func listenRabbit() {
-	conn, err := amqp.Dial("amqp://guest:guest@10.6.43.124:5672/")
+	conn, err := amqp.Dial("amqp://usuario:guamelo1324@10.6.43.124:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
