@@ -139,7 +139,7 @@ func manageInput() {
 			}
 			break
 		} else {
-			if checkPlayers() == "Ganador" || etapa_actual > 3 {
+			if checkPlayers() == "Ganador" || etapa_actual > 3 || etapa_check_4 {
 				fmt.Println("El juego del calamar ha finalizado, felicitaciones a los ganadores:")
 				PrintAlive()
 				break
@@ -473,10 +473,10 @@ func checkPlayers() string {
 	}
 	if counter == 0 {
 		return "Muertos"
-	} else if counter > 1 {
-		return "Jugable"
-	} else {
+	} else if counter == 1 {
 		return "Ganador"
+	} else {
+		return "Jugable"
 	}
 }
 

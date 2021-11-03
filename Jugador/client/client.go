@@ -90,12 +90,6 @@ func manageInput() {
 				etapa_jugada1 = true
 				break
 			}
-			if checkWinner(response.Estado) {
-				fmt.Println("Felicitaciones has ganado el juego del calamar")
-				etapa_jugada1 = true
-
-				break
-			}
 			if response.JugadorGano == 1 {
 				fmt.Println("Felicitaciones por ganar la primera etapa")
 				interfaz()
@@ -107,8 +101,14 @@ func manageInput() {
 					}
 				}
 				etapa_jugada1 = true
-				fmt.Println("Espere a las instrucciones para comenzar la segunda etapa")
-				continue
+				if checkWinner(response.Estado) {
+					fmt.Println("Felicitaciones has ganado el juego del calamar")
+					etapa_jugada1 = true
+					break
+				} else {
+					fmt.Println("Espere a las instrucciones para comenzar la segunda etapa")
+					continue
+				}
 			}
 		}
 
@@ -127,12 +127,13 @@ func manageInput() {
 				fmt.Println("Felicitaciones por ganar la segunda etapa")
 				interfaz()
 				etapa_jugada2 = true
-				fmt.Println("Espere a las instrucciones para comenzar la tercera etapa")
-				continue
-			}
-			if checkWinner(response.Estado) {
-				fmt.Println("Felicitaciones has ganado el juego del calamar")
-				break
+				if checkWinner(response.Estado) {
+					fmt.Println("Felicitaciones has ganado el juego del calamar")
+					break
+				} else {
+					fmt.Println("Espere a las instrucciones para comenzar la tercera etapa")
+					continue
+				}
 			}
 		}
 
