@@ -5,12 +5,19 @@
 * Florencia Sofía Valladares Jerez - 201773007-2 
 
 # Instrucciones
-## En cada máquina
+## En cada máquina iniciando sesion como el usuario 'alumno'
 ```go
 export GOPATH="$HOME/go"
 export PATH=$PATH:"$HOME/go/bin" 
 ```
 ## Iniciar procesos
+En cada maquina cuando se inicia sesion como 'alumno' hay que dirigirse a:
+
+```
+ /home/alumno/SD-Tarea2 
+```
+
+luego en esta carpeta se pueden ejecutar los comandos correspondientes a cada maquina listados a continuacion:  
 Iniciar los procesos en su máquina correspondiente
 ### maquina: dist133 - Jugador
 > make jugador
